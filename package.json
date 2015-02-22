@@ -1,0 +1,20 @@
+{
+  "name": "frag",
+  "version": "0.0.1",
+  "description": "jQuery-style traversal for virtual-dom",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*Spec.js"
+  },
+  "author": "joshuachisholm@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "2.0.0",
+    "mocha": "2.1.0",
+    "virtual-dom": "1.3.0"
+  },
+  "dependencies": {
+    "vtree-select": "1.0.3",
+    "virtual-dom-stringify": "2.1.0"
+  }
+}
