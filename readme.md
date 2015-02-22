@@ -6,4 +6,4 @@ A jQuery-style traversal utility for
 
 ### work in progress
 
-See the [tests](/tests).
+See the [tests](/test).
