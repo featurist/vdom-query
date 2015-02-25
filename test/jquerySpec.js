@@ -28,12 +28,19 @@ describe('frag(vdom) vs jquery(html)', function() {
 
   assert('.attr("id")', 'a');
   assert('.find(".c").attr("d")', 'e');
+  assert('.find(".b, .c").attr("d")', undefined);
   assert('.attr("zz")', undefined);
 
-  assert('.eq(0).size()', 1);
+  assert('.eq(0).attr("id")', "a");
   assert('.eq(1).size()', 0);
+  assert('.eq(666).size()', 0);
   assert('.find("*").eq(1).size()', 1);
   assert('.find("*").eq(1).get().map(function(i) { return i.tagName.toUpperCase(); })', ['SPAN']);
+
+  assert('.find(".c").attr("d")', "e");
+  assert('.find(".b").attr("id")', "b");
+  assert('.find("#b .c").attr("class")', "c");
+  assert('.find("* > .c").attr("d")', "e");
 
   assert('.get.constructor', Function);
   assert('.get().map(function(i) { return i.tagName.toUpperCase(); })', ['DIV']);

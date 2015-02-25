@@ -82,7 +82,11 @@ Frag.prototype.find = function(selector) {
 Frag.prototype.attr = function(name) {
   var elements = this.elements();
   if (elements.length > 0) {
-    return elements[0].properties[name];
+    var el = elements[0];
+    if (name == 'class') {
+      return el.properties.className;
+    }
+    return el.properties[name];
   } else {
     return undefined;
   }
