@@ -20,7 +20,7 @@ describe('frag(vdom) vs jquery(html)', function() {
   beforeEach(function() {
     html = '<div id="a" class="a">' +
              '<div id="b" class="b">' +
-               '<span class="c" d="e">XX</span>' +
+               '<span class="c" d="e">X<span>X</span></span>' +
                'YY' +
               '</div>' +
             '</div>';
@@ -34,6 +34,8 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('.eq(0).attr("id")', "a");
   assert('.eq(1).size()', 0);
   assert('.eq(666).size()', 0);
+  assert('.eq(0).eq(0).size()', 1);
+  assert('.eq(0).eq(1).size()', 0);
   assert('.find("*").eq(1).size()', 1);
   assert('.find("*").eq(1).get().map(function(i) { return i.tagName.toUpperCase(); })', ['SPAN']);
 
@@ -41,6 +43,8 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('.find(".b").attr("id")', "b");
   assert('.find("#b .c").attr("class")', "c");
   assert('.find("* > .c").attr("d")', "e");
+
+  assert('.first().attr("id")', "a");
 
   assert('.get.constructor', Function);
   assert('.get().map(function(i) { return i.tagName.toUpperCase(); })', ['DIV']);
@@ -61,29 +65,37 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('.find(".c").text()', 'XX');
 
   assert('.size()', 1);
-  assert('.find("*").size()', 2);
+  assert('.find("*").size()', 3);
+  assert('.find("div, span").size()', 3);
   assert('.find("#a").size()', 0);
   assert('.find(".b .c").size()', 1);
   assert('.find(".b > .c").size()', 1);
 
-  assert('.html().length', 61);
-  assert('.find("div").html()', '<span class="c" d="e">XX</span>YY');
-  assert('.find(":not(div)").html()', 'XX');
+  assert('.html().length', 74);
+  assert('.find("div").html()', '<span class="c" d="e">X<span>X</span></span>YY');
+  assert('.find(":not(div)").html()', 'X<span>X</span>');
   assert('.find("z").html()', undefined);
 
   function assert(expression, expected) {
     describe(expression, function() {
-      var test = function($) {
-        return eval('$' + expression);
-      }
       it ('returns ' + expected, function() {
-        var jqueryResult = test($(html));
-        expect(jqueryResult).to.eql(expected, "unexpected JQUERY result");
-
-        var fragResult = test(fragQuery(html));
-        expect(fragResult).to.eql(expected, "unexpected FRAG result");
+        evaluate("JQUERY", $, expression, expected);
+        evaluate("FRAG", fragQuery, expression, expected);
       });
     });
   }
 
+  function evaluate(library, $, expression, expected) {
+    var test = function($) {
+      return eval('$' + expression);
+    }
+    var result;
+    try {
+      result = test($(html));
+    }
+    catch (e) {
+      throw new Error("Error evaluating " + expression + " in " + library);
+    }
+    expect(result).to.eql(expected, "unexpected " + library + " result");
+  }
 })

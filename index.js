@@ -92,6 +92,10 @@ Frag.prototype.attr = function(name) {
   }
 }
 
+Frag.prototype.first = function() {
+  return this.eq(0);
+}
+
 Frag.prototype.size = function(name) {
   return this.elements().length;
 }
