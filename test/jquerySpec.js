@@ -30,6 +30,11 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('.find(".c").attr("d")', 'e');
   assert('.attr("zz")', undefined);
 
+  assert('.eq(0).size()', 1);
+  assert('.eq(1).size()', 0);
+  assert('.find("*").eq(1).size()', 1);
+  assert('.find("*").eq(1).get().map(function(i) { return i.tagName.toUpperCase(); })', ['SPAN']);
+
   assert('.get.constructor', Function);
   assert('.get().map(function(i) { return i.tagName.toUpperCase(); })', ['DIV']);
 

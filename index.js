@@ -1,20 +1,41 @@
 var stringify = require('virtual-dom-stringify');
 var select = require('vtree-select');
 
-function Frag(render, selector) {
+function Frag(render, selector, predicate) {
   this.render = render;
   this.selector = selector;
+  this.predicate = predicate;
   return this;
 }
 
 Frag.prototype.nodes = function() {
   var vdom = this.render();
-  if (this.selector == '> *') { return [vdom]; }
-  return select(this.selector)(vdom) || [];
+  var nodes;
+  if (this.selector == '> *') {
+    nodes = [vdom];
+  } else {
+    nodes = select(this.selector)(vdom) || [];
+  }
+  return nodes;
+}
+
+Frag.prototype.filterNodes = function(nodes) {
+  if (this.predicate) {
+    var filtered = [];
+    for (var i = 0; i < nodes.length; ++i) {
+      if (this.predicate(nodes[i], i)) {
+        filtered.push(nodes[i]);
+      }
+    }
+    return filtered;
+  }
+  else {
+    return nodes;
+  }
 }
 
 Frag.prototype.elements = function() {
-  return nodesWithTagNames(this.nodes());
+  return this.filterNodes(nodesWithTagNames(this.nodes()));
 }
 
 Frag.prototype.textNodes = function() {
@@ -23,6 +44,12 @@ Frag.prototype.textNodes = function() {
 
 Frag.prototype.get = function() {
   return this.elements();
+}
+
+Frag.prototype.eq = function(n) {
+  return new Frag(this.render, this.selector, function(item, i) {
+    return i == n;
+  });
 }
 
 Frag.prototype.html = function() {
