@@ -1,6 +1,6 @@
 # frag
 
-A jQuery-style traversal utility for
+A jQuery-style [traversal](http://api.jquery.com/category/traversing/) utility for
 [virtual-dom](https://github.com/Matt-Esch/virtual-dom).
 
 
