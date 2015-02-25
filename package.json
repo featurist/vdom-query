@@ -10,11 +10,14 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "2.0.0",
+    "html-to-vdom": "0.5.4",
+    "jquery": "2.1.3",
+    "jsdom": "3.0.3",
     "mocha": "2.1.0",
     "virtual-dom": "1.3.0"
   },
   "dependencies": {
-    "vtree-select": "1.0.3",
-    "virtual-dom-stringify": "2.1.0"
+    "virtual-dom-stringify": "2.1.0",
+    "vtree-select": "1.0.3"
   }
 }

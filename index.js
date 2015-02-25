@@ -9,12 +9,8 @@ function Frag(render, selector) {
 
 Frag.prototype.nodes = function() {
   var vdom = this.render();
-  if (this.selector) {
-    return select(this.selector)(vdom) || [];
-  }
-  else {
-    return [vdom];
-  }
+  if (this.selector == '> *') { return [vdom]; }
+  return select(this.selector)(vdom) || [];
 }
 
 Frag.prototype.elements = function() {
@@ -25,6 +21,10 @@ Frag.prototype.textNodes = function() {
   return nodesWithText(this.nodes());
 }
 
+Frag.prototype.get = function() {
+  return this.elements();
+}
+
 Frag.prototype.html = function() {
   var elements = this.elements();
   if (elements.length > 0) {
@@ -32,7 +32,7 @@ Frag.prototype.html = function() {
       return stringify(node);
     }).join('');
   } else {
-    return '';
+    return undefined;
   }
 }
 
@@ -47,14 +47,9 @@ Frag.prototype.text = function() {
 }
 
 Frag.prototype.find = function(selector) {
-  if (this.selector) {
-    return new Frag(this.render, this.selector.split(',').map(function(t) {
-      return t.trim() + ' ' + selector;
-    }).join(', '));
-  }
-  else {
-    return new Frag(this.render, selector);
-  }
+  return new Frag(this.render, this.selector.split(',').map(function(t) {
+    return t.trim() + ' ' + selector;
+  }).join(', '));
 }
 
 Frag.prototype.attr = function(name) {
@@ -64,6 +59,10 @@ Frag.prototype.attr = function(name) {
   } else {
     return undefined;
   }
+}
+
+Frag.prototype.size = function(name) {
+  return this.elements().length;
 }
 
 Frag.prototype.hasClass = function(name) {
@@ -99,5 +98,5 @@ function nodesWithText(nodes) {
 }
 
 module.exports = function(render) {
-  return new Frag(render);
+  return new Frag(render, '> *');
 }
