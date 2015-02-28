@@ -57,6 +57,15 @@ var dollar = vdollar.extend({
     }
   },
 
+  map: function(callback) {
+    var self = this;
+    return dollar(function() {
+      return self.get().map(function(item) {
+        return callback.apply(item);
+      });
+    })
+  },
+
   size: function() {
     return this.get().length;
   },
