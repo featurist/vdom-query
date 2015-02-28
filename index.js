@@ -102,7 +102,9 @@ function createSelectorIterator(prev, selector, nodeFilter) {
       if (prevIterator.selector == ':root' && selector[0] == '>') {
         prevIterator.selector = selector;
       } else {
-        prevIterator.selector += ' ' + selector;
+        prevIterator.selector = prevIterator.selector.split(',').map(function(pattern) {
+          return pattern.trim() + ' ' + selector;
+        }).join(', ');
       }
       prevIterator.nodeFilter = nodeFilter;
       return prevIterator;
