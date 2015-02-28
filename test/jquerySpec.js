@@ -4,12 +4,12 @@ var expect = require('chai').expect;
 
 var VNode = require('virtual-dom/vnode/vnode');
 var VText = require('virtual-dom/vnode/vtext');
-var vdomFor = require('html-to-vdom')({ VNode: VNode, VText: VText });
+var htmlToVDom = require('html-to-vdom')({ VNode: VNode, VText: VText });
 
 var $ = require('jquery')(require("jsdom").jsdom().parentWindow);
 
 function fragQuery(html) {
-  var vdom = vdomFor(html);
+  var vdom = htmlToVDom(html);
   return frag(function() { return vdom });
 }
 
@@ -20,8 +20,8 @@ describe('frag(vdom) vs jquery(html)', function() {
   beforeEach(function() {
     html = '<div id="a" class="a">' +
              '<div id="b" class="b">' +
-               '<span class="c" d="e">X<span>X</span></span>' +
-               'YY' +
+               '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>' +
+               'ZZ' +
               '</div>' +
             '</div>';
   });
@@ -60,11 +60,12 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$.find("div, span").hasClass("c")', true);
   assert('$.find("div, span").hasClass("z")', false);
 
-  assert('$.text()', 'XXYY');
-  assert('$.find("> *").text()', 'XXYY');
+  assert('$.text()', 'XYZZ');
+  assert('$.find("> *").text()', 'XYZZ');
   assert('$.find("z").text()', '');
-  assert('$.find(".c").text()', 'XX');
-  assert('$.find("div, span").text()', 'XXYYXXX');
+  assert('$.find(".c").text()', 'XY');
+  assert('$.find("*[d], *[e]").text()', 'XY');
+  assert('$.find("div, span").text()', 'XYZZXYY');
 
   assert('$.size()', 1);
   assert('$.find("*").size()', 3);
@@ -72,13 +73,26 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$.find("#a").size()', 0);
   assert('$.find(".b .c").size()', 1);
   assert('$.find(".b > .c").size()', 1);
+  assert('$.find(".b > .c").size()', 1);
 
-  assert('$.html().length', 74);
-  assert('$.find("div").html()', '<span class="c" d="e">X<span>X</span></span>YY');
-  assert('$.find(":not(div)").html()', 'X<span>X</span>');
+  assert('$.html().length', 87);
+  assert('$.find("div").html()', '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>ZZ');
+  assert('$.find(":not(div)").html()', 'X<span>Y</span>');
   assert('$.find("z").html()', undefined);
 
   assert('$.find("y, div, .b").find("span").size()', 2);
+
+  assert('$.find("*[e*=\'b\']").size()', 1);
+  assert('$.find("*[e^=\'a\']").size()', 1);
+  assert('$.find("*[e$=\'e\']").size()', 1);
+  assert('$.find("*[e~=\'c\']").size()', 1);
+  assert('$.find("*[e|=\'ab\']").size()', 1);
+
+  assert('$.find("*[e*=\'x\']").size()', 0);
+  assert('$.find("*[e^=\'x\']").size()', 0);
+  assert('$.find("*[e$=\'x\']").size()', 0);
+  assert('$.find("*[e~=\'x\']").size()', 0);
+  assert('$.find("*[e|=\'x\']").size()', 0);
 
   function assert(expression, expected) {
     describe(expression, function() {
