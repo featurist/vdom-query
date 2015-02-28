@@ -119,6 +119,9 @@ describe('frag(vdom) vs jquery(html)', function() {
 
   assert('$(html).not(".z").size()', 1);
 
+  assert('$(html).has("div").size()', 1);
+  assert('$(html).has("div, span").size()', 1);
+
   function assert(expression, expected) {
     describe(expression, function() {
       it ('returns ' + expected, function() {

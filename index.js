@@ -46,6 +46,12 @@ var dollar = vdollar.extend({
     }).size() > 0;
   },
 
+  has: function(selector) {
+    return this.filter(function(e) {
+      return dollar([e]).find(selector).createIterator().hasNext();
+    });
+  },
+
   html: function() {
     var elements = this.get();
     if (elements.length > 0) {
