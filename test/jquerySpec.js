@@ -79,22 +79,22 @@ describe('frag(vdom) vs jquery(html)', function() {
   function assert(expression, expected) {
     describe(expression, function() {
       it ('returns ' + expected, function() {
-        evaluate("JQUERY", $, expression, expected);
-        evaluate("FRAG", fragQuery, expression, expected);
+        expectLibraryResult("JQUERY", $, expression, expected);
+        expectLibraryResult("FRAG", fragQuery, expression, expected);
       });
     });
   }
 
-  function evaluate(library, $, expression, expected) {
+  function expectLibraryResult(library, $, expression, expected) {
     var test = function($) {
       return eval('$' + expression);
     }
-    var result;
     try {
       result = test($(html));
     }
     catch (e) {
-      throw new Error("Error evaluating " + expression + " in " + library);
+      e.message = "Error evaluating " + expression + " in " + library + ": " + e.message;
+      throw e;
     }
     expect(result).to.eql(expected, "unexpected " + library + " result");
   }

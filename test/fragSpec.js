@@ -18,6 +18,6 @@ describe('frag(render)', function() {
       f.click(123);
       expect(clicks[0]).to.equal(123);
     })
-  })
+  });
 
 });

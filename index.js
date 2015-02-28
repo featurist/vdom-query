@@ -1,123 +1,86 @@
+var vdollar = require('vdollar');
 var stringify = require('virtual-dom-stringify');
 var select = require('vtree-select');
 
-function Frag(render, selector, predicate) {
-  this.render = render;
-  this.selector = selector;
-  this.predicate = predicate;
-  return this;
-}
+var dollar = vdollar.extend({
+  attr: function(name) {
+    var elements = this.get();
+    if (elements.length > 0) {
+      var el = elements[0];
+      if (name == 'class') {
+        return el.properties.className;
+      }
+      return el.properties[name];
+    } else {
+      return undefined;
+    }
+  },
 
-Frag.prototype.nodes = function() {
-  var vdom = this.render();
-  var nodes;
-  if (this.selector == '> *') {
-    nodes = [vdom];
-  } else {
-    nodes = select(this.selector)(vdom) || [];
-  }
-  return nodes;
-}
-
-Frag.prototype.filterNodes = function(nodes) {
-  if (this.predicate) {
-    var filtered = [];
-    for (var i = 0; i < nodes.length; ++i) {
-      if (this.predicate(nodes[i], i)) {
-        filtered.push(nodes[i]);
+  click: function(e) {
+    var elements = this.get();
+    for (var i = 0; i < elements.length; ++i) {
+      if (elements[i].properties.onclick) {
+        elements[i].properties.onclick(e);
       }
     }
-    return filtered;
-  }
-  else {
-    return nodes;
-  }
-}
+  },
 
-Frag.prototype.elements = function() {
-  return this.filterNodes(nodesWithTagNames(this.nodes()));
-}
+  elements: function() {
+    return this.filter(function(n) {
+      return typeof(n.text) !== 'string';
+    });
+  },
 
-Frag.prototype.textNodes = function() {
-  return nodesWithText(this.nodes());
-}
+  find: function(selector) {
+    return this.mutate(createSelectorIterator(this, selector, selectElements));
+  },
 
-Frag.prototype.get = function() {
-  return this.elements();
-}
+  hasClass: function(name) {
+    return this.filter(function(e) {
+      return e.properties && e.properties.className &&
+               e.properties.className.split(' ').indexOf(name) > -1;
+    }).size() > 0;
+  },
 
-Frag.prototype.eq = function(n) {
-  return new Frag(this.render, this.selector, function(item, i) {
-    return i == n;
-  });
-}
+  html: function() {
+    var elements = this.get();
+    if (elements.length > 0) {
+      return elements[0].children.map(function(node) {
+        return stringify(node);
+      }).join('');
+    } else {
+      return undefined;
+    }
+  },
 
-Frag.prototype.html = function() {
-  var elements = this.elements();
-  if (elements.length > 0) {
-    return elements[0].children.map(function(node) {
-      return stringify(node);
+  size: function() {
+    return this.get().length;
+  },
+
+  text: function() {
+    var iterator = createSelectorIterator(this, '*', selectTextNodes);
+    return this.mutate(iterator).get().map(function(n) {
+      return n.text;
     }).join('');
-  } else {
-    return undefined;
+  },
+
+  textNodes: function() {
+    return this.filter(function(n) {
+      return typeof(n.text) === 'string';
+    })
+  },
+
+  toString: function() {
+    return "vdom-dollar";
   }
+});
+
+function selectElements(vdom, selector) {
+  return nodesWithTagNames((select(selector))(vdom) || []);
 }
 
-Frag.prototype.text = function() {
-  var textNodes = this.textNodes();
-  if (textNodes.length == 0) {
-    textNodes = this.find("*").textNodes();
-  }
-  return textNodes.map(function(e) {
-    return e.text;
-  }).join('');
-}
-
-Frag.prototype.find = function(selector) {
-  return new Frag(this.render, this.selector.split(',').map(function(t) {
-    return t.trim() + ' ' + selector;
-  }).join(', '));
-}
-
-Frag.prototype.attr = function(name) {
-  var elements = this.elements();
-  if (elements.length > 0) {
-    var el = elements[0];
-    if (name == 'class') {
-      return el.properties.className;
-    }
-    return el.properties[name];
-  } else {
-    return undefined;
-  }
-}
-
-Frag.prototype.first = function() {
-  return this.eq(0);
-}
-
-Frag.prototype.size = function(name) {
-  return this.elements().length;
-}
-
-Frag.prototype.hasClass = function(name) {
-  return this.elements().filter(function(e) {
-    return e.properties && e.properties.className &&
-             e.properties.className.split(' ').indexOf(name) > -1;
-  }).length > 0;
-}
-
-Frag.prototype.toString = function() {
-  return 'frag(' + this.html() + ')';
-}
-
-Frag.prototype.click = function(e) {
-  var elements = this.elements();
-  for (var i = 0; i < elements.length; ++i) {
-    if (elements[i].properties.onclick) {
-      elements[i].properties.onclick(e);
-    }
-  }
+function selectTextNodes(vdom, selector) {
+  return nodesWithText((select(selector))(vdom) || []);
 }
 
 function nodesWithTagNames(nodes) {
@@ -132,6 +95,54 @@ function nodesWithText(nodes) {
   })
 }
 
+function createSelectorIterator(prev, selector, nodeFilter) {
+  return function() {
+    var prevIterator = prev.createIterator();
+    if (typeof(prevIterator.selector) == 'string') {
+      if (prevIterator.selector == ':root' && selector[0] == '>') {
+        prevIterator.selector = selector;
+      } else {
+        prevIterator.selector += ' ' + selector;
+      }
+      prevIterator.nodeFilter = nodeFilter;
+      return prevIterator;
+    }
+
+    var iterator;
+    function ensureSelected(i) {
+      if (!iterator) {
+        vdom = prevIterator.next();
+        if (vdom) {
+          var selectedElements = i.nodeFilter(vdom, i.selector);
+          iterator = vdollar(selectedElements).createIterator();
+        }
+        else
+          iterator = vdollar([]).createIterator();
+
+        iterator.selector = selector;
+      }
+    }
+    return {
+      op: "selector",
+      selector: selector,
+      nodeFilter: nodeFilter,
+      next: function() {
+        ensureSelected(this);
+        return iterator.next();
+      },
+      hasNext: function() {
+        ensureSelected(this);
+        return iterator.hasNext();
+      },
+      toString: function() {
+        return selector;
+      }
+    };
+  };
+};
+
 module.exports = function(render) {
-  return new Frag(render, '> *');
+  return dollar(function() {
+    return [render()];
+  }).find(":root");
 }
