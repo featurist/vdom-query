@@ -32,7 +32,7 @@ var dollar = vdollar.extend({
   },
 
   find: function(selector) {
-    return this.mutate(createSelectorIterator(this, selector, selectElements));
+    return this.mutate(createSelectIterator(this, selector, selectElements));
   },
 
   hasClass: function(name) {
@@ -60,7 +60,7 @@ var dollar = vdollar.extend({
   text: function() {
     var texts = [];
     this.get().forEach(function(e) {
-      var iterator = createSelectorIterator(dollar([e]), '*', selectTextNodes)();
+      var iterator = createSelectIterator(dollar([e]), '*', selectTextNodes)();
       while (iterator.hasNext()) {
         texts.push(iterator.next().text);
       }
@@ -93,13 +93,11 @@ function nodesWithText(nodes) {
   })
 }
 
-function createSelectorIterator(prev, selector, nodeFilter) {
+function createSelectIterator(prev, selector, nodeFilter) {
   return function() {
     var prevIterator = prev.createIterator();
     if (typeof(prevIterator.selector) == 'string') {
-      prevIterator.selector = prevIterator.selector.split(',').map(function(pattern) {
-        return pattern.trim() + ' ' + selector;
-      }).join(', ');
+      prevIterator.selector = appendSelector(prevIterator.selector, selector);
       prevIterator.nodeFilter = nodeFilter;
       return prevIterator;
     }
@@ -136,6 +134,12 @@ function createSelectorIterator(prev, selector, nodeFilter) {
     };
   };
 };
+
+function appendSelector(selector, addition) {
+  return selector.split(/\s*,\s*/).map(function(pattern) {
+    return pattern + ' ' + addition;
+  }).join(', ');
+}
 
 module.exports = function(render) {
   return dollar(function() {

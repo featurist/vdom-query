@@ -5,7 +5,7 @@ var expect = require('chai').expect;
 describe('frag(render)', function() {
 
   describe('.click(e)', function() {
-    it('clicks event handlers', function() {
+    it('calls onclick(e) event handlers', function() {
       var clicks = [];
 
       function render() {

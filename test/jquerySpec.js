@@ -60,6 +60,9 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$.find("div, span").hasClass("c")', true);
   assert('$.find("div, span").hasClass("z")', false);
 
+  assert('$.find("SPAN").size()', 2);
+  assert('$.find("div, SPAN").size()', 3);
+
   assert('$.text()', 'XYZZ');
   assert('$.find("> *").text()', 'XYZZ');
   assert('$.find("z").text()', '');
