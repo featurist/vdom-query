@@ -58,16 +58,14 @@ var dollar = vdollar.extend({
   },
 
   text: function() {
-    var iterator = createSelectorIterator(this, '*', selectTextNodes);
-    return this.mutate(iterator).get().map(function(n) {
-      return n.text;
-    }).join('');
-  },
-
-  textNodes: function() {
-    return this.filter(function(n) {
-      return typeof(n.text) === 'string';
-    })
+    var texts = [];
+    this.get().forEach(function(e) {
+      var iterator = createSelectorIterator(dollar([e]), '*', selectTextNodes)();
+      while (iterator.hasNext()) {
+        texts.push(iterator.next().text);
+      }
+    });
+    return texts.join('');
   },
 
   toString: function() {
@@ -99,13 +97,9 @@ function createSelectorIterator(prev, selector, nodeFilter) {
   return function() {
     var prevIterator = prev.createIterator();
     if (typeof(prevIterator.selector) == 'string') {
-      if (prevIterator.selector == ':root' && selector[0] == '>') {
-        prevIterator.selector = selector;
-      } else {
-        prevIterator.selector = prevIterator.selector.split(',').map(function(pattern) {
-          return pattern.trim() + ' ' + selector;
-        }).join(', ');
-      }
+      prevIterator.selector = prevIterator.selector.split(',').map(function(pattern) {
+        return pattern.trim() + ' ' + selector;
+      }).join(', ');
       prevIterator.nodeFilter = nodeFilter;
       return prevIterator;
     }
