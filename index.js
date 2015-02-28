@@ -16,6 +16,10 @@ var dollar = vdollar.extend({
     }
   },
 
+  children: function() {
+    return this.find("> *");
+  },
+
   click: function(e) {
     var elements = this.get();
     for (var i = 0; i < elements.length; ++i) {

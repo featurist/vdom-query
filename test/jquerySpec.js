@@ -32,6 +32,8 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$.find(".b, .c").attr("d")', undefined);
   assert('$.attr("zz")', undefined);
 
+  assert('$.children().size()', 1);
+
   assert('$.eq(0).attr("id")', "a");
   assert('$.eq(1).size()', 0);
   assert('$.eq(666).size()', 0);
