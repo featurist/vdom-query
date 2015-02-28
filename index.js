@@ -57,6 +57,15 @@ var dollar = vdollar.extend({
     }
   },
 
+  is: function(selector) {
+    var iterator = this.createIterator();
+    while (iterator.hasNext())
+      if (select(selector).matches(iterator.next()))
+        return true;
+
+    return false;
+  },
+
   map: function(callback) {
     var self = this;
     return dollar(function() {
@@ -64,6 +73,13 @@ var dollar = vdollar.extend({
         return callback.apply(item);
       });
     })
+  },
+
+  not: function(selector) {
+    var sel = select(selector);
+    return this.filter(function(vdom) {
+      return !sel.matches(vdom);
+    });
   },
 
   size: function() {

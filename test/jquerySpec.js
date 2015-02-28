@@ -113,6 +113,12 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$(html).find("*[e~=\'x\']").size()', 0);
   assert('$(html).find("*[e|=\'x\']").size()', 0);
 
+  assert('$(html).is("div")', true);
+  assert('$(html).find("div, span").is("span")', true);
+  assert('$(html).is("z")', false);
+
+  assert('$(html).not(".z").size()', 1);
+
   function assert(expression, expected) {
     describe(expression, function() {
       it ('returns ' + expected, function() {
