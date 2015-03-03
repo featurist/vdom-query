@@ -98,6 +98,14 @@ var dollar = vdollar.extend({
     return this.get().length;
   },
 
+  startOfChain: function() {
+    var parent = this.createIterator();
+    while (parent.parent) {
+      parent = parent.parent;
+    }
+    return this.mutate(function() { return parent; });
+  },
+
   text: function() {
     var texts = [];
     this.get().forEach(function(e) {
@@ -155,6 +163,7 @@ function createSelectIterator(prev, selector, nodeFilter) {
     }
     return {
       op: "selector",
+      parent: prevIterator,
       selector: selector,
       nodeFilter: nodeFilter,
       next: function() {

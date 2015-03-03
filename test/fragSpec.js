@@ -33,4 +33,16 @@ describe('frag(render)', function() {
     })
   });
 
+  describe('.startOfChain()', function() {
+    it('returns the start of the chain', function() {
+      function render() {
+        return h('.x', {}, [h('.y', 'hello')])
+      }
+
+      var f = frag(render);
+      var p = f.slice(0, 1).eq(0).startOfChain();
+      expect(p.outerHtml()).to.equal('<div class="x"><div class="y">hello</div></div>');
+    })
+  });
+
 });
