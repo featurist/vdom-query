@@ -49,6 +49,8 @@ var dollar = vdollar.extend({
   has: function(selector) {
     return this.filter(function(e) {
       return dollar([e]).find(selector).createIterator().hasNext();
+    }, function(p) {
+      return p + '.has("' + selector + '")';
     });
   },
 
@@ -101,10 +103,6 @@ var dollar = vdollar.extend({
       }
     });
     return texts.join('');
-  },
-
-  toString: function() {
-    return "vdom-dollar";
   }
 });
 
@@ -164,7 +162,10 @@ function createSelectIterator(prev, selector, nodeFilter) {
         return iterator.hasNext();
       },
       toString: function() {
-        return selector;
+        if (this.selector.indexOf(':root') == 0) {
+          return 'V$("' + this.selector.replace(/:root\s*/, '') + '")';
+        }
+        return prev.toString() + '.find("' + this.selector + '")';
       }
     };
   };
