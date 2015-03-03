@@ -40,7 +40,7 @@ describe('frag(render)', function() {
       }
 
       var f = frag(render);
-      var p = f.slice(0, 1).eq(0).startOfChain();
+      var p = f.slice(10, 11).eq(12).startOfChain();
       expect(p.outerHtml()).to.equal('<div class="x"><div class="y">hello</div></div>');
     })
   });
