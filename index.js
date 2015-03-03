@@ -90,6 +90,10 @@ var dollar = vdollar.extend({
     });
   },
 
+  outerHtml: function() {
+    return stringify(this.get(0));
+  },
+
   size: function() {
     return this.get().length;
   },

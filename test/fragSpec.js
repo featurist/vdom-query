@@ -20,4 +20,17 @@ describe('frag(render)', function() {
     })
   });
 
+  describe('.outerHtml()', function() {
+    it('returns the outer HTML of the first element', function() {
+      function render() {
+        return h('.x', {}, [h('.y', 'hello')])
+      }
+
+      var f = frag(render);
+      expect(f.outerHtml()).to.equal(
+        '<div class="x"><div class="y">hello</div></div>'
+      );
+    })
+  });
+
 });
