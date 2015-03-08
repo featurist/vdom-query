@@ -52,6 +52,8 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$(html).find("* > .c").attr("d")', "e");
 
   assert('$(html).first().attr("id")', "a");
+  assert('$(html).find("div").children("span").size()', 1);
+  assert('$(html).find("div").children("spaz").size()', 0);
 
   assert('$(html).get.constructor', Function);
   assert('$(html).get().map(function(i) { return i.tagName.toUpperCase(); })', ['DIV']);
