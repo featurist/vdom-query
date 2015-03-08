@@ -87,6 +87,8 @@ var dollar = vdollar.extend({
     var sel = select(selector);
     return this.filter(function(vdom) {
       return !sel.matches(vdom);
+    }, function(e) {
+      return e.toString() + '.not("' + selector + '")';
     });
   },
 
