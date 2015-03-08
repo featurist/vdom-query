@@ -17,7 +17,7 @@ var dollar = vdollar.extend({
   },
 
   children: function() {
-    return this.find("> *");
+    return this.find("> *", function(p) { return p.toString() + '.children()'; });
   },
 
   click: function(e) {
@@ -35,8 +35,8 @@ var dollar = vdollar.extend({
     });
   },
 
-  find: function(selector) {
-    return this.mutate(createSelectIterator(this, selector, selectElements));
+  find: function(selector, toString) {
+    return this.mutate(createSelectIterator(this, selector, selectElements, toString));
   },
 
   hasClass: function(name) {
@@ -87,8 +87,8 @@ var dollar = vdollar.extend({
     var sel = select(selector);
     return this.filter(function(vdom) {
       return !sel.matches(vdom);
-    }, function(e) {
-      return e.toString() + '.not("' + selector + '")';
+    }, function(p) {
+      return p.toString() + '.not("' + selector + '")';
     });
   },
 
@@ -140,12 +140,17 @@ function nodesWithText(nodes) {
   })
 }
 
-function createSelectIterator(prev, selector, nodeFilter) {
+function createSelectIterator(prev, selector, nodeFilter, toString) {
   return function() {
     var prevIterator = prev.createIterator();
     if (typeof(prevIterator.selector) == 'string') {
       prevIterator.selector = appendSelector(prevIterator.selector, selector);
       prevIterator.nodeFilter = nodeFilter;
+      if (toString) {
+        prevIterator.toString = function() {
+          return toString(prev);
+        };
+      }
       return prevIterator;
     }
 
