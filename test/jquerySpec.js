@@ -126,6 +126,10 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$(html).has("div").size()', 1);
   assert('$(html).has("div, span").size()', 1);
 
+  assert('var i = 0; $(html).each(function() { ++i }); i;', 1)
+  assert('var i = 0; $(html).find("*").each(function() { ++i }); i;', 3)
+  assert('var i = 0; $(html).find("z").each(function() { ++i }); i;', 0)
+
   function assert(expression, expected) {
     describe(expression, function() {
       it ('returns ' + expected, function() {

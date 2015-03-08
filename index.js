@@ -32,6 +32,13 @@ var dollar = vdollar.extend({
     }
   },
 
+  each: function(callback) {
+    var iterator = this.createIterator();
+    while (iterator.hasNext()) {
+      callback.call(null, iterator.next());
+    }
+  },
+
   elements: function() {
     return this.filter(function(n) {
       return typeof(n.text) !== 'string';
