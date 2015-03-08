@@ -66,11 +66,12 @@ var dollar = vdollar.extend({
   },
 
   is: function(selector) {
-    var iterator = this.createIterator();
-    while (iterator.hasNext())
-      if (select(selector).matches(iterator.next()))
-        return true;
-
+    if (typeof(selector) == 'string') {
+      var iterator = this.createIterator();
+      while (iterator.hasNext())
+        if (select(selector).matches(iterator.next()))
+          return true;
+    }
     return false;
   },
 
