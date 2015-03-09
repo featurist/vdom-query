@@ -107,6 +107,18 @@ var dollar = vdollar.extend({
     return stringify(this.get(0));
   },
 
+  parent: function() {
+    var elements = this.get();
+    var all = this.startOfChain().find("*");
+    return all.filter(function(e) {
+      for (var i = 0; i < elements.length; i++) {
+        if (e.children && e.children.indexOf(elements[i]) > -1)
+          return true;
+      }
+      return false;
+    });
+  },
+
   size: function() {
     return this.get().length;
   },

@@ -86,6 +86,10 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$(html).find(".b > .c").size()', 1);
   assert('$(html).find(".b > .c").size()', 1);
 
+  assert('$(html).find("span").parent().size()', 2);
+  assert('$(html).find("span").parent().get().map(function(i) { return i.tagName.toUpperCase(); })', [ 'DIV', 'SPAN' ]);
+  assert('$(html).find("z").parent().size()', 0);
+
   assert('$(html).find("*").map(function() { return $(this).html() }).get()',
     [
       '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>ZZ',
