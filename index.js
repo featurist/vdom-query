@@ -18,9 +18,13 @@ var dollar = vdollar.extend({
 
   children: function(selector) {
     if (typeof (selector) == 'string') {
-      return this.find("> " + selector, function(p) { return p.toString() + '.children("' + selector + '")'; });
+      return this.find("> " + selector, function(p) {
+        return p.toString() + '.children("' + selector + '")';
+      });
     }
-    return this.find("> *", function(p) { return p.toString() + '.children()'; });
+    return this.find("> *", function(p) {
+      return p.toString() + '.children()';
+    });
   },
 
   click: function(e) {
@@ -46,7 +50,8 @@ var dollar = vdollar.extend({
   },
 
   find: function(selector, toString) {
-    return this.mutate(createSelectIterator(this, selector, selectElements, toString));
+    return this.mutate(
+      createSelectIterator(this, selector, selectElements, toString));
   },
 
   hasClass: function(name) {
@@ -215,8 +220,13 @@ function createSelectIterator(prev, selector, nodeFilter, toString) {
 };
 
 function appendSelector(selector, addition) {
-  return selector.split(/\s*,\s*/).map(function(pattern) {
-    return pattern + ' ' + addition;
+  var selectorParts = selector.split(/\s*,\s*/);
+  var additionParts = addition.split(/\s*,\s*/);
+
+  return selectorParts.map(function(p1) {
+    return additionParts.map(function(p2) {
+      return p1 + ' ' + p2;
+    }).join(', ')
   }).join(', ');
 }
 

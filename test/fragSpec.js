@@ -41,7 +41,18 @@ describe('frag(render)', function() {
 
       var f = frag(render);
       var p = f.slice(10, 11).eq(12).startOfChain();
-      expect(p.outerHtml()).to.equal('<div class="x"><div class="y">hello</div></div>');
+      expect(p.outerHtml()).to.equal(
+        '<div class="x"><div class="y">hello</div></div>');
+    })
+  });
+
+  describe('combining selectors', function() {
+    it('combines successive select iterators', function() {
+      function render() {}
+      var f = frag(render);
+      var p = f.find("a, b").find("x, y");
+      expect(p.createIterator().selector).to.equal(
+        ':root a x, :root a y, :root b x, :root b y');
     })
   });
 

@@ -81,6 +81,7 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$(html).size()', 1);
   assert('$(html).find("*").size()', 3);
   assert('$(html).find("div, span").size()', 3);
+  assert('$(html).find("div, span").find("span, div").size()', 2);
   assert('$(html).find("#a").size()', 0);
   assert('$(html).find(".b .c").size()', 1);
   assert('$(html).find(".b > .c").size()', 1);
@@ -120,7 +121,13 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('$(html).find("*[e|=\'x\']").size()', 0);
 
   assert('$(html).is("div")', true);
+  assert('$(html).is("#a")', true);
+  assert('$(html).is("div#a")', true);
+  assert('$(html).is(".a")', true);
+  assert('$(html).is("span")', false);
   assert('$(html).is($(html))', false);
+  assert('$(html).is(false)', false);
+  assert('$(html).is(true)', false);
 
   assert('$(html).find("div, span").is("span")', true);
   assert('$(html).is("z")', false);
@@ -151,7 +158,8 @@ describe('frag(vdom) vs jquery(html)', function() {
       result = test(html);
     }
     catch (e) {
-      e.message = "Error evaluating " + expression + " in " + library + ": " + e.message;
+      e.message = "Error evaluating " + expression +
+                  " in " + library + ": " + e.message;
       throw e;
     }
     expect(result).to.eql(expected, "unexpected " + library + " result");
