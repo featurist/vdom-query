@@ -45,6 +45,9 @@ Call all onclick handlers on any of the matched elements.
 ### .each(function)
 Iterate over a vdom-query object, executing a function for each matched element.
 
+### .filter(function)
+Reduce the set of matched elements to those that pass the function's test.
+
 ### .find(selector)
 Get the descendants of each element in the current set of matched elements, filtered by a selector.
 
@@ -60,7 +63,7 @@ Check the current matched set of elements against a selector and return true if 
 ### .last([count])
 Reduce the set of matched elements to the final `count` in the set, or the last element if count is omitted.
 
-### .map(func)
+### .map(function)
 Pass each element in the current matched set through a function, producing a new set containing the return values.
 
 ### .not(selector)
