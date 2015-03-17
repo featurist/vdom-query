@@ -1,5 +1,5 @@
 {
-  "name": "frag",
+  "name": "vdom-query",
   "version": "0.0.1",
   "description": "jQuery-style traversal for virtual-dom",
   "main": "index.js",

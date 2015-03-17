@@ -1,34 +1,19 @@
 var jquery = require('jquery');
-var frag = require('../');
+var vdomQuery = require('../');
 var expect = require('chai').expect;
 
 var VNode = require('virtual-dom/vnode/vnode');
 var VText = require('virtual-dom/vnode/vtext');
 var htmlToVDom = require('html-to-vdom')({ VNode: VNode, VText: VText });
 
-var $ = require('jquery')(require("jsdom").jsdom().parentWindow);
+describe('vdomQuery(vdom) behaves like jQuery(html)', function() {
 
-function fragQuery(html) {
-  if (typeof(html) == 'string') {
-    var vdom = htmlToVDom(html);
-    return frag(function() { return vdom });
-  } else {
-    return frag(function() { return html; })
-  }
-}
-
-describe('frag(vdom) vs jquery(html)', function() {
-
-  var html;
-
-  beforeEach(function() {
-    html = '<div id="a" class="a">' +
-             '<div id="b" class="b">' +
-               '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>' +
-               'ZZ' +
-              '</div>' +
-            '</div>';
-  });
+  var html = '<div id="a" class="a">' +
+               '<div id="b" class="b">' +
+                 '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>' +
+                 'ZZ' +
+               '</div>' +
+             '</div>';
 
   assert('$(html).attr("id")', 'a');
   assert('$(html).find(".c").attr("d")', 'e');
@@ -142,10 +127,22 @@ describe('frag(vdom) vs jquery(html)', function() {
   assert('var i = 0; $(html).find("z").each(function() { ++i }); i;', 0)
 
   function assert(expression, expected) {
+
+    var $ = require('jquery')(require("jsdom").jsdom().parentWindow);
+
+    function v$(html) {
+      if (typeof(html) == 'string') {
+        var vdom = htmlToVDom(html);
+        return vdomQuery(function() { return vdom });
+      } else {
+        return vdomQuery(function() { return html; })
+      }
+    }
+
     describe(expression, function() {
       it ('returns ' + expected, function() {
-        expectLibraryResult("JQUERY", $, expression, expected);
-        expectLibraryResult("FRAG", fragQuery, expression, expected);
+        expectLibraryResult("jQuery", $, expression, expected);
+        expectLibraryResult("vdomQuery", v$, expression, expected);
       });
     });
   }
