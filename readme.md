@@ -45,6 +45,9 @@ Call all onclick handlers on any of the matched elements.
 ### .each(function)
 Iterate over a vdom-query object, executing a function for each matched element.
 
+### .eq(index)
+Reduce the set of matched elements to the one at the specified index.
+
 ### .filter(function)
 Reduce the set of matched elements to those that pass the function's test.
 
@@ -54,8 +57,17 @@ Get the descendants of each element in the current set of matched elements, filt
 ### .first()
 Reduce the set of matched elements to the first in the set.
 
+### .get([index])
+Retrieve the virtual DOM elements matched by the vdom-query object.
+
 ### .has(selector)
 Reduce the set of matched elements to those that have a descendant that matches the selector.
+
+### .hasClass(selector)
+Determine whether any of the matched elements are assigned the given class.
+
+### .html()
+Get the HTML contents of the first element in the set of matched elements.
 
 ### .is(selector)
 Check the current matched set of elements against a selector and return true if at least one of these elements matches the given arguments.
@@ -69,8 +81,26 @@ Pass each element in the current matched set through a function, producing a new
 ### .not(selector)
 Remove elements matching the selector, from the set of matched elements.
 
+### .outerHtml()
+Get the HTML of the first element in the set of matched elements.
+
+### .parent()
+Get the parent of each element in the current set of matched elements.
+
+### .size()
+Return the number of elements in the vdom-query object.
+
+### .skip(count)
+Reduce the set of matched elements to those with an index greater than the specified count.
+
 ### .slice(start, [count])
 Reduce the set of matched elements to a subset specified by a range of indices.
+
+### .take(count)
+Reduce the set of matched elements to the first `count` elements.
+
+### .text()
+Get the combined text contents of each element in the set of matched elements, including their descendants.
 
 # Work in progress
 
