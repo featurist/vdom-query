@@ -17,5 +17,8 @@
     "virtual-dom": "2.1.1",
     "virtual-hyperscript": "^4.6.0",
     "vtree-select": "https://github.com/featurist/vtree-select.git#vdom2"
+  },
+  "dependencies": {
+    "vtree-select": "git+https://github.com/featurist/vtree-select.git#vdom2"
   }
 }

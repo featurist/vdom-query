@@ -1,4 +1,5 @@
-function daisyChain(transformers) {
+function daisyChain(chainables, chainBreakers) {
+  chainBreakers = chainBreakers || [];
 
   function Daisy(items, stalk) {
     this.stalk = stalk;
@@ -13,9 +14,15 @@ function daisyChain(transformers) {
     return toArray(this);
   }
 
-  function addTransformerToPrototype(func) {
+  function addChainableToPrototype(func) {
     Daisy.prototype[func.name] = function() {
       return applyTransform.call(this, func, toArray(arguments));
+    };
+  }
+
+  function addChainBreakerToPrototype(func) {
+    Daisy.prototype[func.name] = function() {
+      return func.call(toArray(this), arguments);
     };
   }
 
@@ -24,8 +31,12 @@ function daisyChain(transformers) {
     return new Daisy(transformed, this);
   }
 
-  for (var i = 0; i < transformers.length; ++i) {
-    addTransformerToPrototype(transformers[i]);
+  for (var i = 0; i < chainables.length; ++i) {
+    addChainableToPrototype(chainables[i]);
+  }
+
+  for (var i = 0; i < chainBreakers.length; ++i) {
+    addChainBreakerToPrototype(chainBreakers[i]);
   }
 
   return function() {
