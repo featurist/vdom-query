@@ -15,4 +15,12 @@ describe('daisyChain', function() {
     var z = $([2, 3]).append(4, 5).prepend(0, 1);
     expect(JSON.stringify(z)).to.equal('[0,1,2,3,4,5]');
   });
+
+  it('defines a method that does not return a daisy', function(){
+    function hello(){
+      return 'hi';
+    }
+    var $ = daisyChain([], [hello]);
+    expect($().hello()).to.equal('hi');
+  });
 });
