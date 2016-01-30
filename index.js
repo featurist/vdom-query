@@ -1,33 +1,35 @@
 var daisyChain = require('./daisyChain');
 var select = require("vtree-select");
 
+function find(selector) {
+  return v$(
+    this.reduce(function(nodes, vtree) {
+      return nodes.concat(select(selector)(vtree));
+    }, [])
+  );
+}
 
-module.exports = function(root){
-  function find(selector){
-    return select(selector)(root);
-  }
+function text() {
+  return joinTextsIn(this);
+}
 
-  function text(){
-    function getChildText(node){
-      var text = node.text || '';
-      (node.children || []).forEach(function(childNode){
-        text += getChildText(childNode);
-      });
-        
-      return text;
+function joinTextsIn(vnodes) {
+  return vnodes.reduce(function(texts, node) {
+    if (typeof(node.text) == 'string') {
+      var text = node.text.trim();
+      if (text.length > 0) { texts.push(text); }
     }
+    else if (node.children) {
+      texts = texts.concat(joinTextsIn(node.children));
+    }
+    return texts;
+  }, []).join(' ');
+}
 
-    return this.reduce(function(textBuffer, node){
-      return textBuffer + getChildText(node);
-    }, '');
-  }
+var vDaisy = daisyChain([find], [text]);
 
-  function isVdomQueryObject(){
-    return (root.find && root.text);
-  }
-  var $ = daisyChain([find], [text]);
-  if (isVdomQueryObject()){
-    return root;
-  }
-  return $([root]);
-};
+function v$(vtree) {
+  return vDaisy(vtree.length > 0 ? vtree : [vtree]);
+}
+
+module.exports = v$;
