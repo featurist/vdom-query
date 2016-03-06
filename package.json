@@ -19,6 +19,7 @@
     "vtree-select": "https://github.com/featurist/vtree-select.git#vdom2"
   },
   "dependencies": {
+    "html-to-vdom": "^0.7.0",
     "jsdom": "^3.1.2",
     "vtree-select": "git+https://github.com/featurist/vtree-select.git#vdom2"
   }

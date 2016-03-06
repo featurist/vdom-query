@@ -30,6 +30,19 @@ describe('text()', function(){
   });
 });
 
+describe('size()', function(){
+  it('has no children', function(){
+    var vdom = h('.x');
+
+    expect($(vdom).find('.x').size()).to.equal(0);
+  });
+  it('has some children', function(){
+    var vdom = h('.x', h('.y'));
+
+    expect($(vdom).size()).to.equal(1);
+  })
+});
+
 describe('wrap', function(){
   it('can double wrap a vdom-query object', function(){
     var vdom = h('.x', 'hello'); 

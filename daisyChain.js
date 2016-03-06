@@ -22,7 +22,7 @@ function daisyChain(chainables, chainBreakers) {
 
   function addChainBreakerToPrototype(func) {
     Daisy.prototype[func.name] = function() {
-      return func.call(toArray(this), arguments);
+      return func.call(toArray(this.stalk || this), arguments);
     };
   }
 
