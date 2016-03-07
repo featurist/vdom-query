@@ -1,13 +1,35 @@
 var daisyChain = require('./daisyChain');
 var select = require("vtree-select");
-var parser = require('html2hscript');
+
+var attributeMap = {
+  'class' : 'className',
+  'for' : 'htmlFor'
+};
 
 function find(selector) {
   return v$(
     this.reduce(function(nodes, vtree) {
-      return nodes.concat(select(selector)(vtree));
+      return nodes.concat(select(selector)(vtree) || []);
     }, [])
   );
+}
+
+function hasClass(className) {
+  return this.reduce(function(hasClass, node) {
+    if (hasClass || !node.properties.className) { return hasClass }
+    else {
+      var classList = node.properties.className.split(' ');
+      return classList.indexOf(className) !== -1;
+    }
+  }, false);
+}
+
+function attr(name) {
+  if (this[0]) {
+    var attributeKey = attributeMap[name] || name;
+    return this[0].properties[attributeKey];
+  }
+
 }
 
 function text() {
@@ -15,9 +37,7 @@ function text() {
 }
 
 function size() {
-  return this.reduce(function(count, node){
-    return count + node.children.length;
-  }, 0);
+  return this.length;
 }
 
 function joinTextsIn(vnodes) {
@@ -49,24 +69,25 @@ function append(vdom){
 }
 
 function htmlToDom(html){
-  var VNode = require('virtual-dom/vnode/vnode');
-  var VText = require('virtual-dom/vnode/vtext');
-
-  var convertHTML = require('html-to-vdom')({
-    VNode: VNode,
-    VText: VText
-  });
-
-  return convertHTML(html);
+  var parser = require('2vdom');
+  var h = require('virtual-dom/h')
+  return parser(function(tagName, properties, children){
+    var fixedProperties = {};
+    Object.keys(properties).forEach(function(key){
+      var newKey = attributeMap[key] || key;
+      fixedProperties[newKey] = properties[key];
+    });
+    return h(tagName, fixedProperties, children);
+  }, html);
 }
 
-var vDaisy = daisyChain([find, append], [text, size]);
+var vDaisy = daisyChain([find, append], [text, size, hasClass, attr]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {
     vtree = htmlToDom(vtree);
   }
-  return vDaisy(vtree.length > 0 ? vtree : [vtree]);
+  return vDaisy(vtree.hasOwnProperty('length') ? vtree : [vtree]);
 }
 
 module.exports = v$;

@@ -31,16 +31,45 @@ describe('text()', function(){
 });
 
 describe('size()', function(){
-  it('has no children', function(){
+  it('is empty', function(){
     var vdom = h('.x');
 
-    expect($(vdom).find('.x').size()).to.equal(0);
+    expect($(vdom).find('.y').size()).to.equal(0);
   });
-  it('has some children', function(){
+  it('has some elements', function(){
     var vdom = h('.x', h('.y'));
 
     expect($(vdom).size()).to.equal(1);
   })
+});
+
+describe('hasClass()', function(){
+  it('does no have a class', function(){
+    var vdom = h('div');
+
+    expect($(vdom).hasClass('x')).to.be.false;
+  });
+  it('has a class', function(){
+    var vdom = h('.x');
+
+    expect($(vdom).hasClass('x')).to.be.true;
+  });
+});
+
+describe('attr()', function(){
+  it('gets the attribute', function(){
+    var vdom = h('div', {className: 'x', style: 'width:100px;'});
+
+    expect($(vdom).attr('class')).to.equal('x');
+    expect($(vdom).attr('style')).to.equal('width:100px;');
+  });
+
+  it('gets nothing when there is no attribute or node', function(){
+    var vdom = h('.x');
+
+    expect($(vdom).attr('id')).to.be.undefined;
+    expect($(vdom).find('span').attr('style')).to.be.undefined;
+  });
 });
 
 describe('wrap', function(){
