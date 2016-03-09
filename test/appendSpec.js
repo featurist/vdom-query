@@ -18,4 +18,11 @@ describe('append()', function(){
     expect($(vdom).find('.x').length).to.equal(1);
     expect($(vdom).find('.x').text()).to.equal('hello');
   });
+
+  it('can append and find siblings', function(){
+    var vdom = h('body');
+
+    $(vdom).append('<div><span>a</span><span>b</span></div>');
+    expect($(vdom).find('span').length).to.equal(2);
+  });
 });

@@ -14,6 +14,12 @@ function find(selector) {
   );
 }
 
+function is(selector) {
+  return this.reduce(function(nodes, vtree) {
+    return nodes.concat(select(selector)(vtree) || []);
+  }, []).length > 0;
+}
+
 function hasClass(className) {
   return this.reduce(function(hasClass, node) {
     if (hasClass || !node.properties.className) { return hasClass }
@@ -71,17 +77,18 @@ function append(vdom){
 function htmlToDom(html){
   var parser = require('2vdom');
   var h = require('virtual-dom/h')
-  return parser(function(tagName, properties, children){
+  return parser(function(tagName, properties){
     var fixedProperties = {};
     Object.keys(properties).forEach(function(key){
       var newKey = attributeMap[key] || key;
       fixedProperties[newKey] = properties[key];
     });
+    var children = Array.prototype.slice.call(arguments, 2);
     return h(tagName, fixedProperties, children);
   }, html);
 }
 
-var vDaisy = daisyChain([find, append], [text, size, hasClass, attr]);
+var vDaisy = daisyChain([find, append], [text, size, hasClass, attr, is]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

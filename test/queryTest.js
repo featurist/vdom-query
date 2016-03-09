@@ -14,17 +14,26 @@ describe('find()', function(){
 
     expect($(vdom).find('.x').find('.y').length).to.equal(1);
   });
+
+  it('can find multiple siblings', function(){
+    var vdom = h('div', [
+      h('span', 'a'),
+      h('span', 'b')
+    ]);
+
+    expect($(vdom).find('span').length).to.equal(2);
+  });
 });
 
 describe('text()', function(){
   it('can get the text of an element', function(){
-    var vdom = h('.x', 'hello'); 
+    var vdom = h('.x', 'hello');
 
     expect($(vdom).find('.x').text()).to.equal('hello');
   });
 
   it('gets the text of an element and all its children', function(){
-    var vdom = h('.x', ['hello', h('div', [' world', h('div', ' how'), h('div', ' are you')])]); 
+    var vdom = h('.x', ['hello', h('div', [' world', h('div', ' how'), h('div', ' are you')])]);
 
     expect($(vdom).find('.x').text()).to.equal('hello world how are you');
   });
@@ -72,15 +81,29 @@ describe('attr()', function(){
   });
 });
 
+describe('is()', function(){
+  it('matches when a child contains the expression', function(){
+    var vdom = h('body', h('div.x'));
+
+    expect($(vdom).is('.x')).to.be.true;
+  });
+
+  it('does not match when a child does not contain the expression', function(){
+    var vdom = h('body');
+
+    expect($(vdom).is('.x')).to.be.false;
+  });
+})
+
 describe('wrap', function(){
   it('can double wrap a vdom-query object', function(){
-    var vdom = h('.x', 'hello'); 
+    var vdom = h('.x', 'hello');
 
     expect($($(vdom).find('.x')).text()).to.equal('hello');
   });
 
   it('can rescope a previous vdom-query object', function(){
-    var vdom = h('.x', 'hello'); 
+    var vdom = h('.x', 'hello');
 
     expect($($(vdom)[0]).find('.x').text()).to.equal('hello');
   });
