@@ -48,8 +48,8 @@ function size() {
 
 function joinTextsIn(vnodes) {
   return vnodes.reduce(function(texts, node) {
-    if (typeof(node.vtree.text) == 'string') {
-      var text = node.vtree.text.trim();
+    if (typeof(node.text) == 'string') {
+      var text = node.text.trim();
       if (text.length > 0) { texts.push(text); }
     }
     else if (node.children) {
@@ -81,8 +81,10 @@ function parent() {
 function remove() {
   this.map(function(child){
     var parent = child.parent;
-    var childIndex = parent.vtree.children.indexOf(child);
-    parent.vtree.children.splice(childIndex, 1);
+
+    var childIndex = parent.children.indexOf(child);
+    parent.children.splice(childIndex, 1);
+
   });
 }
 

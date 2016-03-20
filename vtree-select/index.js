@@ -66,23 +66,17 @@ function traverse(vtree, fn) {
 
 function mapTree(vtree, parent) {
   if (vtree.type === "VirtualText") {
-    return {
-      contents: vtree.text,
-      properties: {},
-      parent: parent,
-      vtree: vtree,
-    };
+    vtree.contents = vtree.text;
+    vtree.parent = parent;
+    vtree.properties = {};
+    return vtree;
   }
 
-  var node = {
-    tagName: vtree.tagName,
-    contents: "",
-    properties: vtree.properties || {},
-    parent: parent,
-    vtree: vtree,
-  };
-  node.children = vtree.children.map(function(child) {
-    return mapTree(child.vtree || child, node);
+  vtree.parent = parent;
+  vtree.properties = vtree.properties || {};
+  vtree.contents = "";
+  vtree.children.forEach(function(child) {
+    return mapTree(child, vtree);
   });
-  return node;
+  return vtree;
 }

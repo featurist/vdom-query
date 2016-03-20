@@ -9,16 +9,6 @@ var li = h("LI", "item");
 var ul = h("ul", [li]);
 var tree = h("DIV#tree", [span1, span2, ul]);
 
-function vtree(nodes){
-  return nodes.map(function(node){
-    return node.vtree;
-  });
-}
-
-function vtreeEqual(actual, expected){
-  assert.deepEqual(vtree(actual), expected);
-}
-
 var assert = require("assert");
 describe('vtree-select', function(){
   it('selects the parent', function(){
@@ -27,29 +17,29 @@ describe('vtree-select', function(){
   });
 
   it('select root element', function(){
-    vtreeEqual(select("div")(tree), [tree]);
-    vtreeEqual(select("div")(tree), [tree]);
-    vtreeEqual(select("#tree")(tree), [tree]);
-    vtreeEqual(select("[id]")(tree), [tree]);
-    vtreeEqual(select("[id=tree]")(tree), [tree]);
-    vtreeEqual(select("div[id=tree]")(tree), [tree]);
+    assert.deepEqual(select("div")(tree), [tree]);
+    assert.deepEqual(select("div")(tree), [tree]);
+    assert.deepEqual(select("#tree")(tree), [tree]);
+    assert.deepEqual(select("[id]")(tree), [tree]);
+    assert.deepEqual(select("[id=tree]")(tree), [tree]);
+    assert.deepEqual(select("div[id=tree]")(tree), [tree]);
   });
 
   it('select children', function(){
-    vtreeEqual(select("span")(tree), [span1, span2]);
-    vtreeEqual(select("span.span1")(tree), [span1]);
-    vtreeEqual(select("span.span2")(tree), [span2]);
+    assert.deepEqual(select("span")(tree), [span1, span2]);
+    assert.deepEqual(select("span.span1")(tree), [span1]);
+    assert.deepEqual(select("span.span2")(tree), [span2]);
     // 3rd tier children
-    vtreeEqual(select("div ul LI")(tree), [li]);
+    assert.deepEqual(select("div ul LI")(tree), [li]);
   });
 
 
   it('uses css operator', function(){
-    vtreeEqual(select("div ul > li")(tree), [li]);
-    vtreeEqual(select("div * > li")(tree), [li]);
-    vtreeEqual(select("*:root")(tree), [tree]);
+    assert.deepEqual(select("div ul > li")(tree), [li]);
+    assert.deepEqual(select("div * > li")(tree), [li]);
+    assert.deepEqual(select("*:root")(tree), [tree]);
 
-    vtreeEqual(select("!* > :contains('hello')")(tree), [span1, span2]);
+    assert.deepEqual(select("!* > :contains('hello')")(tree), [span1, span2]);
   });
 
 
