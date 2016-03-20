@@ -82,7 +82,7 @@ function mapTree(vtree, parent) {
     vtree: vtree,
   };
   node.children = vtree.children.map(function(child) {
-    return mapTree(child, node);
+    return mapTree(child.vtree || child, node);
   });
   return node;
 }
