@@ -15,12 +15,11 @@
     "jsdom": "7.2.2",
     "mocha": "2.3.4",
     "virtual-dom": "2.1.1",
-    "virtual-hyperscript": "^4.6.0",
-    "vtree-select": "https://github.com/featurist/vtree-select.git#vdom2"
+    "virtual-hyperscript": "^4.6.0"
   },
   "dependencies": {
     "2vdom": "^0.1.2",
     "jsdom": "^3.1.2",
-    "vtree-select": "git+https://github.com/featurist/vtree-select.git#vdom2"
+    "cssauron": "git://github.com/featurist/cssauron.git#case-insensitive-tags"
   }
 }

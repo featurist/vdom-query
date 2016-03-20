@@ -108,3 +108,24 @@ describe('wrap', function(){
     expect($($(vdom)[0]).find('.x').text()).to.equal('hello');
   });
 });
+
+describe('parent()', function(){
+  it('finds an elements parent', function(){
+    var vdom = h('body', h('.x', h('.y', h('.z'))));
+    expect($(vdom).find('.z').parent().attr('class')).to.equal('y');
+  })
+})
+
+describe('remove()', function(){
+  it('can remove a node from the vdom', function(){
+    var vdom = h('body', h('.x'));
+    $(vdom).find('.x').remove();
+    expect($(vdom).find('.x').length).to.equal(0);
+  });
+
+  it('can remove all matching nodes from the vdom', function(){
+    var vdom = h('body', [h('.x'), h('.x'), h('.x')]);
+    $(vdom).find('.x').remove();
+    expect($(vdom).find('.x').length).to.equal(0);
+  });
+});

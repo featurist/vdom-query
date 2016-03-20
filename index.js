@@ -1,5 +1,5 @@
 var daisyChain = require('./daisyChain');
-var select = require("vtree-select");
+var select = require("./vtree-select");
 
 var attributeMap = {
   'class' : 'className',
@@ -48,8 +48,8 @@ function size() {
 
 function joinTextsIn(vnodes) {
   return vnodes.reduce(function(texts, node) {
-    if (typeof(node.text) == 'string') {
-      var text = node.text.trim();
+    if (typeof(node.vtree.text) == 'string') {
+      var text = node.vtree.text.trim();
       if (text.length > 0) { texts.push(text); }
     }
     else if (node.children) {
@@ -74,6 +74,19 @@ function append(vdom){
   return this;
 }
 
+function parent() {
+  return v$(this[0].parent);
+}
+
+function remove() {
+  this.map(function(child){
+    var parent = child.parent;
+    var childIndex = parent.vtree.children.indexOf(child);
+    parent.vtree.children.splice(childIndex, 1);
+  });
+}
+
+
 function htmlToDom(html){
   var parser = require('2vdom');
   var h = require('virtual-dom/h')
@@ -88,7 +101,7 @@ function htmlToDom(html){
   }, html);
 }
 
-var vDaisy = daisyChain([find, append], [text, size, hasClass, attr, is]);
+var vDaisy = daisyChain([find, append, parent], [text, size, hasClass, attr, is, remove]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

@@ -7,7 +7,7 @@ var html = '<a><b><c x="1"><d x="1" /></c><e /></b></a>';
 var vdom = h('a', h('b', h('c', { x: '1' }, h('d', { x: '1' })), h('e')));
 var $ = jquery(require("jsdom").jsdom().parentWindow);
 
-describe("like jQuery, $('" + html + "')", function() {
+xdescribe("like jQuery, $('" + html + "')", function() {
   expect('.find("a").length', 0);
   expect('.find("b").length', 1);
   expect('.find("a, b").length', 1);
