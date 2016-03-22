@@ -88,6 +88,43 @@ function remove() {
   });
 }
 
+function on(eventName, handler) {
+  this.forEach(function(node) {
+    node.events = node.events || [];
+    node.events.push({
+      eventName: eventName,
+      handler: handler
+    });
+  });
+  return this;
+}
+
+function trigger(eventName) {
+  this.forEach(function(node){
+    (node.events || []).filter(function(event){
+      return event.eventName === eventName;
+    }).forEach(function(event){
+      event.handler();
+    });
+  });
+}
+
+function prop(name, value){
+  if (value !== undefined) {
+    this.forEach(function(node){
+      delete node.properties[name];
+      if (value) {
+        node.properties[name] = name;
+      }
+    });
+  } else {
+    var node = this[0];
+    if (name === 'tagName') {
+      return node.tagName;
+    }
+    return node.properties && (node.properties[name] === name || node.properties[name] === '');
+  }
+}
 
 function htmlToDom(html){
   var parser = require('2vdom');
@@ -103,7 +140,7 @@ function htmlToDom(html){
   }, html);
 }
 
-var vDaisy = daisyChain([find, append, parent], [text, size, hasClass, attr, is, remove]);
+var vDaisy = daisyChain([find, append, parent, on, trigger], [text, size, hasClass, attr, is, remove, prop]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

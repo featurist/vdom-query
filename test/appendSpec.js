@@ -26,3 +26,35 @@ describe('append()', function(){
     expect($(vdom).find('span').length).to.equal(2);
   });
 });
+
+describe('prop()', function(){
+  describe('disabled', function(){
+    it('sets true', function(){
+      var vdom = h('input');
+
+      $(vdom).prop('disabled', true)
+      expect($(vdom).attr('disabled')).to.equal('disabled');
+    });
+
+    it('gets true when disabled', function(){
+      var vdom = h('input');
+
+      $(vdom).prop('disabled', true)
+      expect($(vdom).prop('disabled')).to.be.true;
+    });
+
+    it('gets false when not disabled', function(){
+      var vdom = h('input');
+
+      expect($(vdom).prop('disabled')).to.be.false;
+    });
+  });
+
+  describe('tagName', function(){
+    it('gets tag names', function(){
+      var vdom = h('input', h('div'));
+      expect($(vdom).find('input').prop('tagName')).to.equal('INPUT');
+      expect($(vdom).find('div').prop('tagName')).to.equal('DIV');
+    });
+  });
+});
