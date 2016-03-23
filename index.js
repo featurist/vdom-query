@@ -104,7 +104,7 @@ function trigger(eventName) {
     (node.events || []).filter(function(event){
       return event.eventName === eventName;
     }).forEach(function(event){
-      event.handler();
+      event.handler.bind(node)();
     });
   });
 }
@@ -126,6 +126,15 @@ function prop(name, value){
   }
 }
 
+function val() {
+  if (v$(this).prop('tagName') === 'SELECT') {
+    var selected = this[0].children.filter(function(node){
+      return node.properties.selected === 'selected';
+    })[0];
+    return v$(selected).text();
+  }
+}
+
 function htmlToDom(html){
   var parser = require('2vdom');
   var h = require('virtual-dom/h')
@@ -140,7 +149,7 @@ function htmlToDom(html){
   }, html);
 }
 
-var vDaisy = daisyChain([find, append, parent, on, trigger], [text, size, hasClass, attr, is, remove, prop]);
+var vDaisy = daisyChain([find, append, parent, on, trigger], [text, size, hasClass, attr, is, remove, prop, val]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

@@ -8,6 +8,7 @@ describe('on()', function(){
 
     return new Promise(function(success){
       $(vdom).find('.x').on('click', function(){
+        expect(this).to.equal(vdom);
         success(); 
       });
       $(vdom).find('.x').trigger('click');

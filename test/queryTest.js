@@ -39,6 +39,14 @@ describe('text()', function(){
   });
 });
 
+describe('val()', function(){
+  it('can get the value of a select box', function(){
+    var vdom = h('select', [h('option', 'one'), h('option', {selected: 'selected'}, 'two')]);
+
+    expect($(vdom).val()).to.equal('two');
+  })
+});
+
 describe('size()', function(){
   it('is empty', function(){
     var vdom = h('.x');
