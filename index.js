@@ -90,21 +90,20 @@ function remove() {
 
 function on(eventName, handler) {
   this.forEach(function(node) {
-    node.events = node.events || [];
-    node.events.push({
-      eventName: eventName,
-      handler: handler
-    });
+    var handlers = node.properties['on'+eventName] = node.properties['on'+eventName] || [];
+    handlers.push(handler);
   });
   return this;
 }
 
 function trigger(eventName) {
   this.forEach(function(node){
-    (node.events || []).filter(function(event){
-      return event.eventName === eventName;
-    }).forEach(function(event){
-      event.handler.bind(node)();
+    var events = (node.properties['on'+eventName] || []);
+    if (!(events instanceof Array)) {
+      events = [events];
+    }
+    events.forEach(function(handler){
+      handler.bind(node)();
     });
   });
 }

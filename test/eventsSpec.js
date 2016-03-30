@@ -15,3 +15,18 @@ describe('on()', function(){
     });
   });
 });
+
+describe('trigger()', function(){
+  it('calls event handlers on element', function(){
+    var events = [];
+    var vdom = h('.x', {
+      onclick: function(){
+        events.push('click');
+      }
+    });
+
+    $(vdom).find('.x').trigger('click');
+
+    expect(events).to.contain('click');
+  });
+});
