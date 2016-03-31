@@ -105,6 +105,9 @@ function trigger(eventName) {
     events.forEach(function(handler){
       handler.bind(node)();
     });
+    if (node.parent) {
+      v$(node.parent).trigger(eventName);
+    }
   });
 }
 

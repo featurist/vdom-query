@@ -29,4 +29,21 @@ describe('trigger()', function(){
 
     expect(events).to.contain('click');
   });
+
+  it('bubbles events up through the parents', function(){
+    var events = [];
+    var vdom = h('.parent', {
+      onclick: function(){
+        events.push('parent');
+      }
+    }, h('.child', {
+      onclick: function() {
+        events.push('child');
+      }
+    }));
+
+    $(vdom).find('.child').trigger('click');
+
+    expect(events).to.eql(['child', 'parent']);
+  });
 });
