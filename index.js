@@ -38,12 +38,22 @@ function hasClass(className) {
   }, false);
 }
 
+function addClass(className) {
+  this.forEach(function(node) {
+    if (!v$(node).hasClass(className)) {
+      node.properties = node.properties || {};
+      node.properties.className = node.properties.className || '';
+      node.properties.className += ' ' + className;
+    }
+  });
+  return this;
+}
+
 function attr(name) {
   if (this[0]) {
     var attributeKey = attributeMap[name] || name;
     return this[0].properties[attributeKey];
   }
-
 }
 
 function text() {
@@ -192,7 +202,7 @@ function htmlToDom(html){
   }, html);
 }
 
-var vDaisy = daisyChain([find, append, parent, on, trigger, focus], [text, size, hasClass, attr, is, remove, prop, val]);
+var vDaisy = daisyChain([find, append, parent, on, trigger, focus, addClass], [text, size, hasClass, attr, is, remove, prop, val]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

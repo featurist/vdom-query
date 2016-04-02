@@ -58,3 +58,11 @@ describe('prop()', function(){
     });
   });
 });
+
+describe('addClass()', function(){
+  it('adds a class', function(){
+    var vdom = h('div');
+    $(vdom).addClass('green');
+    expect($(vdom).hasClass('green')).to.be.true;
+  });
+});
