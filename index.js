@@ -96,19 +96,23 @@ function on(eventName, handler) {
   return this;
 }
 
-function trigger(eventName) {
+function trigger(eventName, data) {
   this.forEach(function(node){
     var events = (node.properties['on'+eventName] || []);
     if (!(events instanceof Array)) {
       events = [events];
     }
     events.forEach(function(handler){
-      handler.bind(node)();
+      handler.bind(node)(data);
     });
     if (node.parent) {
-      v$(node.parent).trigger(eventName);
+      v$(node.parent).trigger(eventName, data);
     }
   });
+}
+
+function focus() {
+  return v$(this[0]).trigger('focus');
 }
 
 function prop(name, value){
@@ -128,12 +132,23 @@ function prop(name, value){
   }
 }
 
-function val() {
-  if (v$(this).prop('tagName') === 'SELECT') {
+function val(setValue) {
+  var el = v$(this);
+  if (el.prop('tagName') === 'SELECT') {
     var selected = this[0].children.filter(function(node){
       return node.properties.selected === 'selected';
     })[0];
     return v$(selected).text();
+  }
+  if (el.prop('tagName') === 'INPUT') {
+    if (setValue !== undefined) {
+      this[0].properties.value = setValue;
+    }
+    var value = this[0].properties.value;
+    if (value && value.value) {
+      return value.value;
+    }
+    return value;
   }
 }
 
@@ -151,7 +166,7 @@ function htmlToDom(html){
   }, html);
 }
 
-var vDaisy = daisyChain([find, append, parent, on, trigger], [text, size, hasClass, attr, is, remove, prop, val]);
+var vDaisy = daisyChain([find, append, parent, on, trigger, focus], [text, size, hasClass, attr, is, remove, prop, val]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

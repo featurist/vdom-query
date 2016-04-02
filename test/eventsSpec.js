@@ -46,4 +46,17 @@ describe('trigger()', function(){
 
     expect(events).to.eql(['child', 'parent']);
   });
+
+  it('adds context data to event', function(){
+    var eventInfo;
+    var vdom = h('.x', {
+      onkeydown: function(e){
+        eventInfo = e;
+      }
+    });
+
+    $(vdom).find('.x').trigger('keydown', {which: 50});
+
+    expect(eventInfo.which).to.equal(50);
+  });
 });

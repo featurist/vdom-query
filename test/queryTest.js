@@ -44,7 +44,31 @@ describe('val()', function(){
     var vdom = h('select', [h('option', 'one'), h('option', {selected: 'selected'}, 'two')]);
 
     expect($(vdom).val()).to.equal('two');
-  })
+  });
+
+  describe('input', function() {
+    it('can get the value of an input field', function(){
+      var vdom = h('input', {type: 'text', value: 'hello'});
+
+      expect($(vdom).val()).to.equal('hello');
+    });
+
+    it('can set the value of an input field', function(){
+      var vdom = h('input', {type: 'text'});
+
+      $(vdom).val('hello');
+
+      expect(vdom.properties.value).to.equal('hello');
+    });
+
+    it('can reset the value of an input field', function(){
+      var vdom = h('input', {type: 'text', value: 'hi'});
+
+      $(vdom).val('');
+
+      expect(vdom.properties.value).to.equal('');
+    });
+  });
 });
 
 describe('size()', function(){
@@ -135,5 +159,19 @@ describe('remove()', function(){
     var vdom = h('body', [h('.x'), h('.x'), h('.x')]);
     $(vdom).find('.x').remove();
     expect($(vdom).find('.x').length).to.equal(0);
+  });
+});
+
+describe('focus()', function(){
+  it('can focus on an element', function(){
+    var vdom = h('input', {type: 'text'});
+    var focused = false;
+    $(vdom).on('focus', function(){
+      focused = true;
+    });
+
+    $(vdom).focus();
+
+    expect(focused).to.be.true
   });
 });
