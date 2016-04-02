@@ -59,4 +59,14 @@ describe('trigger()', function(){
 
     expect(eventInfo.which).to.equal(50);
   });
+
+  describe('checkbox', function(){
+    it('toggles the state of the checkbox', function(){
+      var vdom = h('input', {type: 'checkbox'});
+
+      expect($(vdom).prop('checked')).to.be.false;
+      $(vdom).trigger('click');
+      expect($(vdom).prop('checked')).to.be.true;
+    });
+  });
 });

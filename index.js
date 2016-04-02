@@ -98,6 +98,10 @@ function on(eventName, handler) {
 
 function trigger(eventName, data) {
   this.forEach(function(node){
+    if (eventName === 'click' && node.tagName === 'INPUT' && node.properties.type === 'checkbox') {
+      var $node = v$(node);
+      $node.prop('checked', !$node.prop('checked'));
+    }
     var events = (node.properties['on'+eventName] || []);
     if (!(events instanceof Array)) {
       events = [events];
