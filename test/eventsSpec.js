@@ -18,16 +18,17 @@ describe('on()', function(){
 
 describe('trigger()', function(){
   it('calls event handlers on element', function(){
-    var events = [];
+    var clickEvent;
     var vdom = h('.x', {
-      onclick: function(){
-        events.push('click');
+      onclick: function(e){
+        clickEvent = e;
       }
     });
 
     $(vdom).find('.x').trigger('click');
 
-    expect(events).to.contain('click');
+    expect(clickEvent).to.not.be.undefined;
+    expect(clickEvent.target).to.equal(vdom);
   });
 
   it('bubbles events up through the parents', function(){
@@ -67,6 +68,16 @@ describe('trigger()', function(){
       expect($(vdom).prop('checked')).to.be.false;
       $(vdom).trigger('click');
       expect($(vdom).prop('checked')).to.be.true;
+    });
+
+    describe('nested in label', function(){
+      it('toggles the state of nested checkboxes', function(){
+        var vdom = h('label', h('input', {type: 'checkbox'}));
+
+        expect($(vdom).find('input').prop('checked')).to.be.false;
+        $(vdom).trigger('click');
+        expect($(vdom).find('input').prop('checked')).to.be.true;
+      });
     });
   });
 });

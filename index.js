@@ -6,6 +6,14 @@ var attributeMap = {
   'for' : 'htmlFor'
 };
 
+function shallowClone(obj){
+  var cloned = {};
+  Object.keys(obj).forEach(function(key){
+    cloned[key] = obj[key];
+  });
+  return cloned;
+}
+
 function find(selector) {
   return v$(
     this.reduce(function(nodes, vtree) {
@@ -97,10 +105,24 @@ function on(eventName, handler) {
 }
 
 function trigger(eventName, data) {
+  data = data || {};
+
   this.forEach(function(node){
-    if (eventName === 'click' && node.tagName === 'INPUT' && node.properties.type === 'checkbox') {
-      var $node = v$(node);
-      $node.prop('checked', !$node.prop('checked'));
+    data = shallowClone(data);
+    var bubbleMode = data.target === node;
+    if (!data.target) {
+      data.target = node;
+    }
+    if (!bubbleMode && eventName === 'click') {
+      if (node.tagName === 'INPUT' && node.properties.type === 'checkbox') {
+        var $node = v$(node);
+        $node.prop('checked', !$node.prop('checked'));
+      }
+
+      if (node.tagName === 'LABEL') {
+        console.log('click child checkbox')
+        v$(node).find('input[type=checkbox]').trigger(eventName, data);
+      }
     }
     var events = (node.properties['on'+eventName] || []);
     if (!(events instanceof Array)) {
