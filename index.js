@@ -108,6 +108,7 @@ function remove() {
 
 function on(eventName, handler) {
   this.forEach(function(node) {
+    node.properties = node.properties || {};
     var handlers = node.properties['on'+eventName] = node.properties['on'+eventName] || [];
     handlers.push(handler);
   });
@@ -130,10 +131,10 @@ function trigger(eventName, data) {
       }
 
       if (node.tagName === 'LABEL') {
-        console.log('click child checkbox')
         v$(node).find('input[type=checkbox]').trigger(eventName, data);
       }
     }
+    node.properties = node.properties || {};
     var events = (node.properties['on'+eventName] || []);
     if (!(events instanceof Array)) {
       events = [events];
