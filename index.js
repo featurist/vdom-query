@@ -61,6 +61,9 @@ function attr(name) {
     return this[0].properties[attributeKey];
   }
 }
+function innerText(){
+  return joinTextsIn(this, true);
+}
 
 function text(text) {
   if (text) {
@@ -75,14 +78,18 @@ function size() {
   return this.length;
 }
 
-function joinTextsIn(vnodes) {
+function joinTextsIn(vnodes, includeLineBreaks) {
   return vnodes.reduce(function(texts, node) {
-    if (typeof(node.text) == 'string') {
+    if (includeLineBreaks && node.tagName === 'BR') {
+      var position = texts.length-1;
+      texts[position] = texts[position] + '\n';
+    }
+    else if (typeof(node.text) === 'string') {
       var text = node.text.trim();
       if (text.length > 0) { texts.push(text); }
     }
     else if (node.children) {
-      texts = texts.concat(joinTextsIn(node.children));
+      texts = texts.concat(joinTextsIn(node.children, includeLineBreaks));
     }
     return texts;
   }, []).join(' ');
@@ -214,7 +221,7 @@ function htmlToDom(html){
   }, html);
 }
 
-var vDaisy = daisyChain([find, append, parent, on, trigger, focus, addClass], [text, size, hasClass, attr, is, remove, prop, val]);
+var vDaisy = daisyChain([find, append, parent, on, trigger, focus, addClass], [innerText, text, size, hasClass, attr, is, remove, prop, val]);
 
 function v$(vtree) {
   if (typeof vtree === 'string') {

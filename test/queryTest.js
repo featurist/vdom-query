@@ -48,6 +48,14 @@ describe('text()', function(){
   });
 });
 
+describe('innerText()', function(){
+  it('gets the text of an element and all its children', function(){
+    var vdom = h('.x', ['hello', h('br'), h('div', ' world')]);
+
+    expect($(vdom).find('.x').innerText()).to.equal('hello\n world');
+  });
+});
+
 describe('val()', function(){
   it('can get the value of a select box', function(){
     var vdom = h('select', [h('option', 'one'), h('option', {selected: 'selected'}, 'two')]);
