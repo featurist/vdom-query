@@ -124,13 +124,19 @@ describe('attr()', function(){
 
 describe('is()', function(){
   it('matches when a child contains the expression', function(){
-    var vdom = h('body', h('div.x'));
+    var vdom = h('body.x');
 
     expect($(vdom).is('.x')).to.be.true;
   });
 
   it('does not match when a child does not contain the expression', function(){
     var vdom = h('body');
+
+    expect($(vdom).is('.x')).to.be.false;
+  });
+
+  it('only matches the top element in the set', function(){
+    var vdom = h('body', h('.x'));
 
     expect($(vdom).is('.x')).to.be.false;
   });

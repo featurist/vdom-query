@@ -24,7 +24,13 @@ function find(selector) {
 
 function is(selector) {
   return this.reduce(function(nodes, vtree) {
-    return nodes.concat(select(selector)(vtree) || []);
+    var vtreeWithoutChildren = {
+      parent: vtree.parent,
+      properties: vtree.properties,
+      contents: vtree.contents,
+      children: []
+    };
+    return nodes.concat(select(selector)(vtreeWithoutChildren) || []);
   }, []).length > 0;
 }
 
