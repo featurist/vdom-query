@@ -37,6 +37,15 @@ describe('text()', function(){
 
     expect($(vdom).find('.x').text()).to.equal('hello world how are you');
   });
+
+  it('sets the text of an element', function(){
+    var vdom = h('.x');
+
+    $(vdom).find('.x').text('hello');
+
+    expect($(vdom).text()).to.equal('hello');
+
+  });
 });
 
 describe('val()', function(){

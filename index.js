@@ -56,7 +56,12 @@ function attr(name) {
   }
 }
 
-function text() {
+function text(text) {
+  if (text) {
+    this.forEach(function(node){
+      node.text = text;
+    });
+  }
   return joinTextsIn(this);
 }
 
