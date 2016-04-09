@@ -220,6 +220,9 @@ function v$(vtree) {
   if (typeof vtree === 'string') {
     vtree = htmlToDom(vtree);
   }
+  if (!vtree) {
+    vtree = [];
+  }
   return vDaisy(vtree.hasOwnProperty('length') ? vtree : [vtree]);
 }
 
