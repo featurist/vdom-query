@@ -151,6 +151,10 @@ function trigger(eventName, data) {
       if (node.tagName === 'LABEL') {
         v$(node).find('input[type=checkbox]').trigger(eventName, data);
       }
+
+      if (node.tagName === 'BUTTON' && (node.properties.type || '').toLowerCase() === 'submit') {
+        v$(node).trigger('submit');
+      }
     }
     node.properties = node.properties || {};
     var events = (node.properties['on'+eventName] || []);

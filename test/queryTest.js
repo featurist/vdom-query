@@ -220,3 +220,21 @@ describe('focus()', function(){
     expect(focused).to.be.true
   });
 });
+
+describe('form', function(){
+  describe('button', function(){
+    it('can submit a parent form', function(){
+      var submitted = false
+      function onsubmit(){
+        submitted = true;
+      }
+      var vdom = h('form',
+        {onsubmit: onsubmit},
+        h('div', h('button', {type: 'submit'}))
+      );
+
+      $(vdom).find('button').trigger('click');
+      expect(submitted).to.be.true;
+    });
+  });
+});
