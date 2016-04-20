@@ -190,11 +190,22 @@ function prop(name, value){
 function val(setValue) {
   var el = v$(this);
   if (el.prop('tagName') === 'SELECT') {
+    if (setValue !== undefined) {
+      this[0].value = setValue;
+    }
     var selected = this[0].children.filter(function(node){
       return node.properties.selected === 'selected';
     })[0];
-    return v$(selected).text();
+
+    if (selected) {
+      return v$(selected).val();
+    }
   }
+
+  if (el.prop('tagName') === 'OPTION') {
+    return el[0].properties.value;
+  }
+
   if (el.prop('tagName') === 'INPUT') {
     if (setValue !== undefined) {
       this[0].properties.value = setValue;

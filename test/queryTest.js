@@ -57,10 +57,32 @@ describe('innerText()', function(){
 });
 
 describe('val()', function(){
-  it('can get the value of a select box', function(){
-    var vdom = h('select', [h('option', 'one'), h('option', {selected: 'selected'}, 'two')]);
+  describe('select', function(){
+    it('can get the value of a select box', function(){
+      var vdom = h('select', [
+        h('option', {value: '1'}, 'one'),
+        h('option', {value: '2', selected: 'selected'}, 'two')
+      ]);
 
-    expect($(vdom).val()).to.equal('two');
+      expect($(vdom).val()).to.equal('2');
+    });
+
+    it('can get the value of an option', function(){
+      var vdom = h('option', {value: '1'}, 'one');
+
+      expect($(vdom).val()).to.equal('1');
+    });
+
+    it('can set the value of a select box', function(){
+      var vdom = h('select', [
+        h('option', {value: '1'}, 'one'),
+        h('option', {value: '2'}, 'two')
+      ]);
+
+      $(vdom).val('2');
+
+      expect(vdom.value).to.equal('2');
+    });
   });
 
   describe('input', function() {
