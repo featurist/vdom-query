@@ -207,12 +207,13 @@ function val(setValue) {
   }
 
   if (el.prop('tagName') === 'OPTION') {
-    return el[0].properties.value;
+    return el[0].properties.value || el.text();
   }
 
   if (el.prop('tagName') === 'INPUT') {
     if (setValue !== undefined) {
       this[0].properties.value = setValue;
+      this[0].value = setValue;
     }
     var value = this[0].properties.value;
     if (value && value.value) {

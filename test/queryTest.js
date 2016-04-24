@@ -73,6 +73,12 @@ describe('val()', function(){
       expect($(vdom).val()).to.equal('1');
     });
 
+    it('uses the text of an option if it has no value', function(){
+      var vdom = h('option', 'one');
+
+      expect($(vdom).val()).to.equal('one');
+    });
+
     it('can set the value of a select box', function(){
       var vdom = h('select', [
         h('option', {value: '1'}, 'one'),
