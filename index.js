@@ -133,6 +133,8 @@ function on(eventName, handler) {
   return this;
 }
 
+function noop(){}
+
 function trigger(eventName, data) {
   data = data || {};
 
@@ -141,6 +143,7 @@ function trigger(eventName, data) {
     var bubbleMode = data.target === node;
     if (!data.target) {
       data.target = node;
+      data.preventDefault = noop; // there is nothing to prevent anyway, it is all virtual!
     }
     if (!bubbleMode && eventName === 'click') {
       if (node.tagName === 'INPUT' && node.properties.type === 'checkbox') {
