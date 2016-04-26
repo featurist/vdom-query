@@ -140,19 +140,20 @@ function trigger(eventName, data) {
 
   this.forEach(function(node){
     data = shallowClone(data);
-    var bubbleMode = data.target === node;
-    if (!data.target) {
-      data.target = node;
-      data.preventDefault = noop; // there is nothing to prevent anyway, it is all virtual!
-    }
-    if (!bubbleMode && eventName === 'click') {
-      if (node.tagName === 'INPUT' && node.properties.type === 'checkbox') {
+    data.preventDefault = noop; // there is nothing to prevent anyway, it is all virtual!
+
+    data.currentTarget = data.currentTarget || node;
+    data.target = data.target || node;
+    data.eventPhase = data.eventPhase || 2;
+
+    if (data.eventPhase === 2 && eventName === 'click') {
+      if (node.tagName === 'INPUT' && (node.properties.type === 'checkbox' || node.properties.type === 'radio')) {
         var $node = v$(node);
         $node.prop('checked', !$node.prop('checked'));
       }
 
       if (node.tagName === 'LABEL') {
-        v$(node).find('input[type=checkbox]').trigger(eventName, data);
+        v$(node).find('input[type=checkbox],input[type=radio]').trigger('click', data);
       }
 
       if (node.tagName === 'BUTTON' && (node.properties.type || '').toLowerCase() === 'submit') {
@@ -168,7 +169,10 @@ function trigger(eventName, data) {
       handler.bind(node)(data);
     });
     if (node.parent) {
-      v$(node.parent).trigger(eventName, data);
+      var parentData = shallowClone(data)
+      parentData.eventPhase = 3;
+      parentData.currentTarget = node.parent;
+      v$(node.parent).trigger(eventName, parentData);
     }
   });
 }

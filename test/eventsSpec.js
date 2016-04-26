@@ -33,19 +33,24 @@ describe('trigger()', function(){
 
   it('bubbles events up through the parents', function(){
     var events = [];
-    var vdom = h('.parent', {
-      onclick: function(){
-        events.push('parent');
+    var vdom = h('parent', {
+      onclick: function(e){
+        events.push({event: 'parent', e: e});
       }
-    }, h('.child', {
-      onclick: function() {
-        events.push('child');
+    }, h('child', {
+      onclick: function(e) {
+        events.push({event: 'child', e: e});
       }
     }));
 
-    $(vdom).find('.child').trigger('click');
+    $(vdom).find('child').trigger('click');
 
-    expect(events).to.eql(['child', 'parent']);
+    var child = events[0];
+    var parent = events[1];
+    expect(child.event).to.equal('child');
+    expect(child.e.eventPhase).to.equal(2);
+    expect(parent.event).to.equal('parent');
+    expect(parent.e.eventPhase).to.equal(3);
   });
 
   it('adds context data to event', function(){
@@ -77,6 +82,68 @@ describe('trigger()', function(){
         expect($(vdom).find('input').prop('checked')).to.be.false;
         $(vdom).trigger('click');
         expect($(vdom).find('input').prop('checked')).to.be.true;
+      });
+    });
+  });
+
+  describe('checkbox', function(){
+    it('toggles the state of the checkbox', function(){
+      var vdom = h('input', {type: 'checkbox'});
+
+      expect($(vdom).prop('checked')).to.be.false;
+      $(vdom).trigger('click');
+      expect($(vdom).prop('checked')).to.be.true;
+    });
+
+    describe('nested in label', function(){
+      it('toggles the state of nested checkboxes', function(){
+        var vdom = h('label', h('input', {type: 'checkbox'}));
+
+        expect($(vdom).find('input').prop('checked')).to.be.false;
+        $(vdom).trigger('click');
+        expect($(vdom).find('input').prop('checked')).to.be.true;
+      });
+    });
+  });
+
+  describe('radio', function(){
+    it('toggles the state of the radio control', function(){
+      var vdom = h('input', {type: 'radio'});
+
+      expect($(vdom).prop('checked')).to.be.false;
+      $(vdom).trigger('click');
+      expect($(vdom).prop('checked')).to.be.true;
+    });
+
+    describe('nested in label', function(){
+      it('toggles the state of nested radio control', function(){
+        var vdom = h('label', h('input', {type: 'radio'}));
+
+        expect($(vdom).find('input').prop('checked')).to.be.false;
+        $(vdom).trigger('click');
+        expect($(vdom).find('input').prop('checked')).to.be.true;
+      });
+    });
+  });
+
+  describe('checkbox', function(){
+    it('toggles the state of the checkbox', function(){
+      var vdom = h('label', h('input', {type: 'checkbox'}));
+
+      var $input = $(vdom).find('input');
+      expect($input.prop('checked')).to.be.false;
+      $input.trigger('click');
+      expect($input.prop('checked')).to.be.true;
+    });
+
+    describe('nested in label', function(){
+      it('toggles the state of nested checkboxes', function(){
+        var vdom = h('label', h('input', {type: 'checkbox'}));
+
+        var $input = $(vdom).find('input');
+        expect($input.prop('checked')).to.be.false;
+        $(vdom).trigger('click');
+        expect($input.prop('checked')).to.be.true;
       });
     });
   });
