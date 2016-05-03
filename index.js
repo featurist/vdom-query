@@ -81,18 +81,17 @@ function size() {
 function joinTextsIn(vnodes, includeLineBreaks) {
   return vnodes.reduce(function(texts, node) {
     if (includeLineBreaks && node.tagName === 'BR') {
-      var position = texts.length-1;
-      texts[position] = texts[position] + '\n';
+      texts.push('\n');
     }
     else if (typeof(node.text) === 'string') {
-      var text = node.text.trim();
+      var text = node.text;
       if (text.length > 0) { texts.push(text); }
     }
     else if (node.children) {
-      texts = texts.concat(joinTextsIn(node.children, includeLineBreaks));
+      texts.push(joinTextsIn(node.children, includeLineBreaks));
     }
     return texts;
-  }, []).join(' ');
+  }, []).join('');
 }
 
 function append(vdom){

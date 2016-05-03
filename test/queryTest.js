@@ -44,7 +44,6 @@ describe('text()', function(){
     $(vdom).find('.x').text('hello');
 
     expect($(vdom).text()).to.equal('hello');
-
   });
 });
 
@@ -53,6 +52,13 @@ describe('innerText()', function(){
     var vdom = h('.x', ['hello', h('br'), h('div', ' world')]);
 
     expect($(vdom).find('.x').innerText()).to.equal('hello\n world');
+  });
+
+  it('combines the text of two elements', function(){
+    var vdom = h('.x', h('div', ['a' , '/', 'b']));
+    var vdomToHtml = require('vdom-to-html');
+    console.log(vdomToHtml(vdom))
+    expect($(vdom).innerText()).to.equal('a/b');
   });
 });
 
