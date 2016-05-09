@@ -25,6 +25,7 @@ function find(selector) {
 function is(selector) {
   return this.reduce(function(nodes, vtree) {
     var vtreeWithoutChildren = {
+      tagName: vtree.tagName,
       parent: vtree.parent,
       properties: vtree.properties,
       contents: vtree.contents,

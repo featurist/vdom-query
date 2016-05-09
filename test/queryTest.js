@@ -56,8 +56,6 @@ describe('innerText()', function(){
 
   it('combines the text of two elements', function(){
     var vdom = h('.x', h('div', ['a' , '/', 'b']));
-    var vdomToHtml = require('vdom-to-html');
-    console.log(vdomToHtml(vdom))
     expect($(vdom).innerText()).to.equal('a/b');
   });
 });
@@ -182,6 +180,12 @@ describe('is()', function(){
 
     expect($(vdom).is('.x')).to.be.false;
   });
+
+  it('matches the tag name', function(){
+    var vdom = h('select');
+
+    expect($(vdom).is('select')).to.be.true;
+  })
 })
 
 describe('wrap', function(){
