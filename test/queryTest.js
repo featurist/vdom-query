@@ -104,18 +104,49 @@ describe('val()', function(){
 
     it('can set the value of an input field', function(){
       var vdom = h('input', {type: 'text'});
+      var $vdom = $(vdom);
 
-      $(vdom).val('hello');
+      $vdom.val('hello');
 
       expect(vdom.properties.value).to.equal('hello');
+      expect($vdom.val()).to.equal('hello');
     });
 
     it('can reset the value of an input field', function(){
       var vdom = h('input', {type: 'text', value: 'hi'});
+      var $vdom = $(vdom);
+
+      $vdom.val('');
+
+      expect(vdom.properties.value).to.equal('');
+      expect($vdom.val()).to.equal('');
+    });
+  });
+
+  describe('textarea', function() {
+    it('can get the value of a textarea', function(){
+      var vdom = h('textarea', 'hello');
+
+      expect($(vdom).val()).to.equal('hello');
+    });
+
+    it('can set the value of a textarea', function(){
+      var vdom = h('textarea');
+      var $vdom = $(vdom);
+
+      $vdom.val('hello');
+
+      expect(vdom.children[0].text).to.equal('hello');
+      expect($vdom.val()).to.equal('hello');
+    });
+
+    it('can reset the value of an input field', function(){
+      var vdom = h('textarea', 'hello');
 
       $(vdom).val('');
 
-      expect(vdom.properties.value).to.equal('');
+      expect(vdom.children[0].text).to.equal('');
+      expect($(vdom).val()).to.equal('');
     });
   });
 });

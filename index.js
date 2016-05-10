@@ -1,5 +1,8 @@
 var daisyChain = require('./daisyChain');
 var select = require("./vtree-select");
+var VText = require('virtual-dom').VText;
+var h = require('virtual-dom/h')
+var parser = require('2vdom');
 
 var attributeMap = {
   'class' : 'className',
@@ -228,11 +231,16 @@ function val(setValue) {
     }
     return value;
   }
+
+  if (el.prop('tagName') === 'TEXTAREA') {
+    if (setValue !== undefined) {
+      this[0].children = [new VText(setValue)];
+    }
+   return el.text();
+  }
 }
 
 function htmlToDom(html){
-  var parser = require('2vdom');
-  var h = require('virtual-dom/h')
   return parser(function(tagName, properties){
     var fixedProperties = {};
     Object.keys(properties).forEach(function(key){
