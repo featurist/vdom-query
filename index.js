@@ -138,6 +138,12 @@ function on(eventName, handler) {
 
 function noop(){}
 
+function nodeToTarget(node){
+  return {
+    id: node.properties.id
+  }
+}
+
 function trigger(eventName, data) {
   data = data || {};
 
@@ -145,8 +151,8 @@ function trigger(eventName, data) {
     data = shallowClone(data);
     data.preventDefault = noop; // there is nothing to prevent anyway, it is all virtual!
 
-    data.currentTarget = data.currentTarget || node;
-    data.target = data.target || node;
+    data.currentTarget = data.currentTarget || nodeToTarget(node);
+    data.target = data.target || nodeToTarget(node);
     data.eventPhase = data.eventPhase || 2;
 
     if (data.eventPhase === 2 && eventName === 'click') {
@@ -169,12 +175,12 @@ function trigger(eventName, data) {
       events = [events];
     }
     events.forEach(function(handler){
-      handler.bind(node)(data);
+      handler.bind(data.target)(data);
     });
     if (node.parent) {
       var parentData = shallowClone(data)
       parentData.eventPhase = 3;
-      parentData.currentTarget = node.parent;
+      parentData.currentTarget = nodeToTarget(node.parent);
       v$(node.parent).trigger(eventName, parentData);
     }
   });

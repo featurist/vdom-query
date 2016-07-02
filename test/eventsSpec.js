@@ -8,7 +8,6 @@ describe('on()', function(){
 
     return new Promise(function(success){
       $(vdom).find('.x').on('click', function(){
-        expect(this).to.equal(vdom);
         success(); 
       });
       $(vdom).find('.x').trigger('click');
@@ -19,16 +18,20 @@ describe('on()', function(){
 describe('trigger()', function(){
   it('calls event handlers on element', function(){
     var clickEvent;
+    var clickEventThis;
     var vdom = h('.x', {
+      id: 'clicker',
       onclick: function(e){
         clickEvent = e;
+        clickEventThis = this;
       }
     });
 
     $(vdom).find('.x').trigger('click');
 
     expect(clickEvent).to.not.be.undefined;
-    expect(clickEvent.target).to.equal(vdom);
+    expect(clickEventThis).to.equal(clickEvent.target);
+    expect(clickEvent.target.id).to.equal('clicker');
   });
 
   it('bubbles events up through the parents', function(){
