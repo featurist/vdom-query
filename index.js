@@ -62,7 +62,11 @@ function addClass(className) {
 function attr(name) {
   if (this[0]) {
     var attributeKey = attributeMap[name] || name;
-    return this[0].properties[attributeKey];
+    var attribute = this[0].properties[attributeKey];
+    if (attribute && attribute.value) {
+      return attribute.value;
+    }
+    return attribute;
   }
 }
 function innerText(){
@@ -166,7 +170,13 @@ function trigger(eventName, data) {
       }
 
       if (node.tagName === 'BUTTON' && (node.properties.type || '').toLowerCase() === 'submit') {
-        v$(node).trigger('submit');
+        var potentialForm = node.parent;
+        while(potentialForm && potentialForm.tagName !== 'FORM') {
+          potentialForm = potentialForm.parent;
+        }
+        if (potentialForm) {
+          v$(potentialForm).trigger('submit');
+        }
       }
     }
     node.properties = node.properties || {};
@@ -177,12 +187,6 @@ function trigger(eventName, data) {
     events.forEach(function(handler){
       handler.bind(data.target)(data);
     });
-    if (node.parent) {
-      var parentData = shallowClone(data)
-      parentData.eventPhase = 3;
-      parentData.currentTarget = nodeToTarget(node.parent);
-      v$(node.parent).trigger(eventName, parentData);
-    }
   });
 }
 

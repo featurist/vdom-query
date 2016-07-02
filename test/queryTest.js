@@ -185,6 +185,12 @@ describe('attr()', function(){
     expect($(vdom).attr('style')).to.equal('width:100px;');
   });
 
+  it('gets an attribute from a SoftSetHook', function(){
+    var vdom = h('input', {value: 'hello'});
+
+    expect($(vdom).attr('value')).to.equal('hello');
+  });
+
   it('gets nothing when there is no attribute or node', function(){
     var vdom = h('.x');
 

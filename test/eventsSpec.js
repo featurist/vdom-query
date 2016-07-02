@@ -49,11 +49,8 @@ describe('trigger()', function(){
     $(vdom).find('child').trigger('click');
 
     var child = events[0];
-    var parent = events[1];
     expect(child.event).to.equal('child');
     expect(child.e.eventPhase).to.equal(2);
-    expect(parent.event).to.equal('parent');
-    expect(parent.e.eventPhase).to.equal(3);
   });
 
   it('adds context data to event', function(){
