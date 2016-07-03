@@ -17,7 +17,7 @@ VDomQuery.prototype.attr = function(name) {
 VDomQuery.prototype.children = function(selector) {
   var children = childrenOf(this);
   if (typeof(selector) == 'string') {
-    children = children.filter(function(child) {
+    children = filter(children, function(child) {
       return cssSelect.is(child, selector);
     });
   }
@@ -29,13 +29,7 @@ VDomQuery.prototype.eq = function(index) {
 }
 
 VDomQuery.prototype.filter = function(predicate) {
-  var results = [];
-  for (var i = 0; i < this.length; ++i) {
-    if (predicate(this[i])) {
-      results.push(this[i]);
-    }
-  }
-  return results;
+  return filter(this, predicate);
 }
 
 VDomQuery.prototype.find = function(selector) {
@@ -47,13 +41,9 @@ VDomQuery.prototype.first = function(selector) {
 }
 
 VDomQuery.prototype.has = function(selector) {
-  var filtered = [];
-  for (var i = 0; i < this.length; ++i) {
-    if (cssSelect.selectOne(selector, this[i].children)) {
-      filtered.push(this[i]);
-    }
-  }
-  return new VDomQuery(filtered);
+  return new VDomQuery(this.filter(function(element) {
+    return !!cssSelect.selectOne(selector, element.children);
+  }));
 }
 
 VDomQuery.prototype.is = function(selector) {
@@ -103,6 +93,16 @@ VDomQuery.prototype.slice = function(start, end) {
     sliced.push(this[i]);
   }
   return new VDomQuery(sliced);
+}
+
+function filter(array, predicate) {
+  var results = [];
+  for (var i = 0; i < array.length; ++i) {
+    if (predicate(array[i])) {
+      results.push(array[i]);
+    }
+  }
+  return results;
 }
 
 function copyArray(from, to) {
