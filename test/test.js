@@ -110,6 +110,12 @@ describe('with ' + html, function() {
     assert(function($) { return $('.a').prev('.e').length }, 0);
   });
 
+  describe('.slice(start [, end])', function() {
+    assert(function($) { return $('.a, .b, .c').slice(1).length }, 2);
+    assert(function($) { return $('.a, .b, .c').slice(1, 2).length }, 1);
+    assert(function($) { return $('.a, .b, .c').slice(0, 2).length }, 2);
+  });
+
   var jQuery, vdomQuery;
 
   before(function() {
