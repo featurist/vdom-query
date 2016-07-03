@@ -29,19 +29,21 @@ describe('with ' + html, function() {
       }) }, ['div', 'div', 'span']);
   });
 
-  describe('.attr()', function() {
+  describe('.attr(name)', function() {
+    assert(function($) { return $('#a').attr('id') }, 'a');
     assert(function($) { return $('#a').attr('class') }, 'a');
+    assert(function($) { return $('.c').attr('e') }, 'ab- c de');
     assert(function($) { return $('#a').attr('missing') }, undefined);
   });
 
-  describe('.children()', function() {
+  describe('.children([selector])', function() {
     assert(function($) { return $('#a').children('missing').length }, 0);
     assert(function($) { return $('div').children('div').children('span').length }, 1);
     assert(function($) { return $('div, span').children('span').length }, 2);
     assert(function($) { return $('missing').children('*').length }, 0);
   });
 
-  describe('.eq(number)', function() {
+  describe('.eq(index)', function() {
     assert(function($) { return $('zzz').eq(1).length }, 0);
     assert(function($) { return $('.a, .b, .c').eq(1).length }, 1);
     assert(function($) { return $('.a, .b').eq(1).eq(0).eq(0).length }, 1);
@@ -62,14 +64,19 @@ describe('with ' + html, function() {
   describe('.first()', function() {
     assert(function($) { return $('*').first().length }, 1);
     assert(function($) { return $('zz').first().length }, 0);
+    assert(function($) { return $('.b, .a').first().attr('class') }, 'a');
   });
 
   describe('.get([index])', function() {
     assert(function($) { return $('zzz').get() }, []);
     assert(function($) { return $('zzz').get(0) }, undefined);
+    assert(function($) { return $('.a').get(0).length }, undefined);
   });
 
   describe('.has(selector)', function() {
+    assert(function($) { return $('.a').has('.a').length }, 0);
+    assert(function($) { return $('.a').has('.b').length }, 1);
+    assert(function($) { return $('.a, .b').has('.c').length }, 2);
     assert(function($) { return $('div').has('div').length }, 1);
     assert(function($) { return $('div').has('span').length }, 2);
     assert(function($) { return $('span').has('span').length }, 1);
@@ -84,6 +91,7 @@ describe('with ' + html, function() {
 
   describe('.next([selector])', function() {
     assert(function($) { return $('.b').next().length }, 1);
+    assert(function($) { return $('.a').next().length }, 0);
     assert(function($) { return $('.b').next('.d').length }, 1);
     assert(function($) { return $('.b').next('.e').length }, 0);
   });
@@ -97,6 +105,7 @@ describe('with ' + html, function() {
 
   describe('.prev([selector])', function() {
     assert(function($) { return $('.d').prev().length }, 1);
+    assert(function($) { return $('.a').prev().length }, 0);
     assert(function($) { return $('.d').prev('.b').length }, 1);
     assert(function($) { return $('.a').prev('.e').length }, 0);
   });

@@ -1,9 +1,13 @@
 var cssSelect = require('css-select');
 
 function VDomQuery(nodes, selector) {
-  var selected = selector ? cssSelect(selector, nodes) : nodes;
-  copyArray(selected, this);
-  this.length = selected.length;
+  if (nodes && nodes.length) {
+    var selected = selector ? cssSelect(selector, nodes) : nodes;
+    copyArray(selected, this);
+    this.length = selected.length;
+  } else {
+    this.length = 0;
+  }
 }
 
 VDomQuery.prototype.attr = function(name) {
@@ -68,7 +72,7 @@ VDomQuery.prototype.get = function(index) {
     copyArray(this, array);
     return array;
   } else {
-    return index >= 0 && index < this.length ? [this[index]] : undefined;
+    return index >= 0 && index < this.length ? this[index] : undefined;
   }
 }
 
@@ -121,7 +125,6 @@ function childrenOf(node) {
 }
 
 function convertVNode(vnode, parent) {
-  // console.log(vdom, null, false);
   var node = {};
   if ('text' in vnode) {
     node.type = 'text';
