@@ -97,6 +97,14 @@ describe('with ' + html, function() {
     assert(function($) { return $('span').has('div').length }, 0);
   });
 
+  describe('.hasClass(name)', function() {
+    assert(function($) { return $('.a').hasClass('a') }, true);
+    assert(function($) { return $('.a').hasClass('b') }, false);
+    assert(function($) { return $('.yo').hasClass('b') }, false);
+    assert(function($) { return $('.a, .b').hasClass('a') }, true);
+    assert(function($) { return $('.a, .b').hasClass('b') }, true);
+  });
+
   describe('.html()', function() {
     assert(function($) { return $('.c').html() }, 'X<span>Y</span>');
     assert(function($) { return $('.a').html() }, '<div class="b"><span class="c" d="e" e="ab- c de">X<span>Y</span></span>ZZ</div><div class="d">DD</div><div class="e">EE</div>');

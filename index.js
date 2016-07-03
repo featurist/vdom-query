@@ -44,6 +44,10 @@ VDomQuery.prototype.has = function(selector) {
   }));
 }
 
+VDomQuery.prototype.hasClass = function(className) {
+  return this.is('.' + className);
+}
+
 VDomQuery.prototype.html = function() {
   return this.length ? childrenOf([this[0]]).map(function(e) {
     return vdomToHtml(e.vnode)
