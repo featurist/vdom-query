@@ -149,7 +149,11 @@ function convertVNode(vnode, parent) {
     }
     for (var key in vnode.properties) {
       if (key != 'attributes') {
-        node.attribs[key] = vnode.properties[key];
+        if (key == 'className') {
+          node.attribs.class = vnode.properties[key];
+        } else {
+          node.attribs[key] = vnode.properties[key];
+        }
       }
     }
   }
@@ -174,10 +178,10 @@ function convertVNode(vnode, parent) {
   return node;
 }
 
-function createVDomQuery(vwindow) {
+function createVDomQuery(vdom) {
   return function vDomQuery(selector) {
     if (typeof(selector) == 'string') {
-      return new VDomQuery([convertVNode(vwindow.document)], selector);
+      return new VDomQuery([convertVNode(vdom)], selector);
     } else if (typeof(selector.get) == 'function') {
       return selector;
     } else if (typeof(selector.length) == 'number') {

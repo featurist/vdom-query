@@ -8,14 +8,13 @@ Implements a subset of the jQuery API.
 ## Example
 
 ```JavaScript
+var vdomQuery = require('vdom-query');
 var h = require('virtual-dom/h');
-var $ = require('vdom-query');
 
-function render() {
-  return h('.top', h('.banana'));
-}
+var vdom = h('.top', h('.banana'));
+var $ = vdomQuery(vdom);
 
-$(render).find('.banana').first().attr('class') //-> banana
+$('.banana').first().attr('class') //-> banana
 
 ```
 
@@ -24,14 +23,12 @@ $(render).find('.banana').first().attr('class') //-> banana
 ## Finding elements in a virtual dom
 
 ```JavaScript
-require('vdom-query')(render);
+require('vdom-query')(vdom);
 ```
 
-* `render` - a function that returns a virtual DOM fragment.
+* `vdom` - a virtual DOM fragment.
 
 The resulting vdom-query object represents a set of elements, which can be manipulated to produce new sets. Every set can extract data or interact with its matching elements.
-
-Traversing the dom to find elements is deferred until it is required, rather than as the query is being constructed. The dom is re-rendered before any traversal.
 
 ### .attr(name)
 Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element.
@@ -90,14 +87,8 @@ Get the parent of each element in the current set of matched elements.
 ### .size()
 Return the number of elements in the vdom-query object.
 
-### .skip(count)
-Reduce the set of matched elements to those with an index greater than the specified count.
-
 ### .slice(start, [count])
 Reduce the set of matched elements to a subset specified by a range of indices.
-
-### .take(count)
-Reduce the set of matched elements to the first `count` elements.
 
 ### .text()
 Get the combined text contents of each element in the set of matched elements, including their descendants.

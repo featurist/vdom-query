@@ -24,6 +24,10 @@ describe('with ' + html, function() {
     assert(function($) { return $('div > span').length }, 1);
     assert(function($) { return $('div, span').length }, 5);
     assert(function($) { return $('.a, .b').length }, 2);
+    assert(function($) { return $('.b + .d').length }, 1);
+    assert(function($) { return $('.b + .e').length }, 0);
+    assert(function($) { return $('.b ~ .d').length }, 1);
+    assert(function($) { return $('.d ~ .b').length }, 0);
     assert(function($) { return tagNamesOf($('.a, .b, .c')) }, ['div', 'div', 'span']);
   });
 
@@ -72,6 +76,7 @@ describe('with ' + html, function() {
 
   describe('.get([index])', function() {
     assert(function($) { return $('zzz').get() }, []);
+    assert(function($) { return $('span').get().length }, 2);
     assert(function($) { return $('zzz').get(0) }, undefined);
     assert(function($) { return $('.a').get(0).length }, undefined);
   });
@@ -137,7 +142,7 @@ describe('with ' + html, function() {
 
     var parser = require('vdom-parser');
     var vdom = htmlToVDom(html);
-    vdomQuery = require('..')({ document: vdom });
+    vdomQuery = require('..')(vdom);
   });
 
   function withEachLibrary(library) {
