@@ -75,11 +75,11 @@ VDomQuery.prototype.map = function(fn) {
 }
 
 VDomQuery.prototype.next = function(selector) {
-  return new VDomQuery(pluckSelect(this, 'next', selector));
+  return pluckSelect(this, 'next', selector);
 }
 
 VDomQuery.prototype.nextAll = function(selector) {
-  return new VDomQuery(pluckSelectAll(this, 'next', selector));
+  return pluckSelectAll(this, 'next', selector);
 }
 
 VDomQuery.prototype.not = function(selector) {
@@ -89,24 +89,28 @@ VDomQuery.prototype.not = function(selector) {
 }
 
 VDomQuery.prototype.parent = function(selector) {
-  return new VDomQuery(pluckSelect(this, 'parent', selector));
+  return pluckSelect(this, 'parent', selector);
 }
 
 VDomQuery.prototype.parents = function(selector) {
-  return new VDomQuery(pluckSelectAll(this, 'parent', selector));
+  return pluckSelectAll(this, 'parent', selector);
 }
 
 VDomQuery.prototype.prev = function(selector) {
-  return new VDomQuery(pluckSelect(this, 'prev', selector));
+  return pluckSelect(this, 'prev', selector);
+}
+
+VDomQuery.prototype.prevAll = function(selector) {
+  return pluckSelectAll(this, 'prev', selector);
 }
 
 VDomQuery.prototype.slice = function(start, end) {
   if (start < 0) return new VDomQuery([]);
-  var sliced = [];
+  var sliced = new VDomQuery();
   for (var i = start; (!end || i < end) && i < this.length; ++i) {
-    sliced.push(this[i]);
+    sliced[sliced.length++] = this[i];
   }
-  return new VDomQuery(sliced);
+  return sliced;
 }
 
 function filter(array, predicate) {
@@ -126,22 +130,26 @@ function copyArray(from, to) {
 }
 
 function pluckSelect(array, property, selector) {
-  var plucked = [];
+  var plucked = new VDomQuery();
   for (var i = 0; i < array.length; ++i) {
     var v = array[i][property];
     if (v && v.type == 'tag' && (!selector || cssSelect.is(v, selector))) {
-      plucked.push(v);
+      plucked[plucked.length++] = v;
     }
   }
   return plucked;
 }
 
 function pluckSelectAll(array, property, selector) {
+  return new VDomQuery(pluckSelectNext(array, property, selector))
+}
+
+function pluckSelectNext(array, property, selector) {
   var plucked = [];
   for (var i = 0; i < array.length; ++i) {
     var v = array[i][property];
     if (v && v.type == 'tag') {
-      plucked = plucked.concat([v]).concat(pluckSelectAll([v], property, selector));
+      plucked = plucked.concat([v]).concat(pluckSelectNext([v], property, selector));
     }
   }
   return selector ? filter(plucked, function(e) { return cssSelect.is(e, selector) } ) : plucked;
@@ -159,7 +167,8 @@ function convertVNode(vnode, parent) {
   var node = {
     parent: parent,
     next: null,
-    prev: null
+    prev: null,
+    attribs: {}
   };
   if ('text' in vnode) {
     node.type = 'text';
@@ -168,7 +177,6 @@ function convertVNode(vnode, parent) {
   else {
     node.type = 'tag';
   }
-  node.attribs = {};
   if (vnode.properties) {
     for (var key in vnode.properties.attributes) {
       node.attribs[key] = vnode.properties.attributes[key];

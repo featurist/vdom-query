@@ -160,6 +160,13 @@ describe('with ' + html, function() {
     assert(function($) { return $('.a').prev('.e').length }, 0);
   });
 
+  describe('.prevAll([selector])', function() {
+    assert(function($) { return $('.e').prevAll().length }, 2);
+    assert(function($) { return $('.e').prevAll('.b').length }, 1);
+    assert(function($) { return $('.e').prevAll('.z').length }, 0);
+    assert(function($) { return $('.y').prevAll('.z').length }, 0);
+  });
+
   describe('.slice(start [, end])', function() {
     assert(function($) { return $('.a, .b, .c').slice(1).length }, 2);
     assert(function($) { return $('.a, .b, .c').slice(1, 2).length }, 1);
