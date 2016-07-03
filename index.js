@@ -1,237 +1,147 @@
-var vdollar = require('vdollar');
-var stringify = require('virtual-dom-stringify');
-var select = require('vtree-select');
+var cssSelect = require('css-select');
 
-var dollar = vdollar.extend({
-  attr: function(name) {
-    var elements = this.get();
-    if (elements.length > 0) {
-      var el = elements[0];
-      if (name == 'class') {
-        return el.properties.className;
-      }
-      return el.properties[name];
-    } else {
-      return undefined;
-    }
-  },
-
-  children: function(selector) {
-    if (typeof (selector) == 'string') {
-      return this.find("> " + selector, function(p) {
-        return p.toString() + '.children("' + selector + '")';
-      });
-    }
-    return this.find("> *", function(p) {
-      return p.toString() + '.children()';
-    });
-  },
-
-  click: function(e) {
-    var elements = this.get();
-    for (var i = 0; i < elements.length; ++i) {
-      if (elements[i].properties.onclick) {
-        elements[i].properties.onclick(e);
-      }
-    }
-  },
-
-  each: function(callback) {
-    var iterator = this.createIterator();
-    while (iterator.hasNext()) {
-      callback.call(null, iterator.next());
-    }
-  },
-
-  elements: function() {
-    return this.filter(function(n) {
-      return typeof(n.text) !== 'string';
-    });
-  },
-
-  find: function(selector, toString) {
-    return this.mutate(
-      createSelectIterator(this, selector, selectElements, toString));
-  },
-
-  hasClass: function(name) {
-    return this.filter(function(e) {
-      return e.properties && e.properties.className &&
-               e.properties.className.split(' ').indexOf(name) > -1;
-    }).size() > 0;
-  },
-
-  has: function(selector) {
-    return this.filter(function(e) {
-      return dollar([e]).find(selector).createIterator().hasNext();
-    }, function(p) {
-      return p + '.has("' + selector + '")';
-    });
-  },
-
-  html: function() {
-    var elements = this.get();
-    if (elements.length > 0) {
-      return elements[0].children.map(function(node) {
-        return stringify(node);
-      }).join('');
-    } else {
-      return undefined;
-    }
-  },
-
-  is: function(selector) {
-    if (typeof(selector) == 'string') {
-      var iterator = this.createIterator();
-      while (iterator.hasNext())
-        if (select(selector).matches(iterator.next()))
-          return true;
-    }
-    return false;
-  },
-
-  map: function(callback) {
-    var self = this;
-    return dollar(function() {
-      return self.get().map(function(item) {
-        return callback.apply(item);
-      });
-    })
-  },
-
-  not: function(selector) {
-    var sel = select(selector);
-    return this.filter(function(vdom) {
-      return !sel.matches(vdom);
-    }, function(p) {
-      return p.toString() + '.not("' + selector + '")';
-    });
-  },
-
-  outerHtml: function() {
-    return stringify(this.get(0));
-  },
-
-  parent: function() {
-    var elements = this.get();
-    var all = this.startOfChain().find("*");
-    return all.filter(function(e) {
-      for (var i = 0; i < elements.length; i++) {
-        if (e.children && e.children.indexOf(elements[i]) > -1)
-          return true;
-      }
-      return false;
-    });
-  },
-
-  size: function() {
-    return this.get().length;
-  },
-
-  startOfChain: function() {
-    var parent = this.createIterator();
-    while (parent.parent) {
-      parent = parent.parent;
-    }
-    return this.mutate(function() { return parent; });
-  },
-
-  text: function() {
-    var texts = [];
-    this.get().forEach(function(e) {
-      var iterator = createSelectIterator(dollar([e]), '*', selectTextNodes)();
-      while (iterator.hasNext()) {
-        texts.push(iterator.next().text);
-      }
-    });
-    return texts.join('');
+function VDomQuery(domNodes, selector) {
+  var filtered = selector ? cssSelect(selector, domNodes) : domNodes;
+  for (var i = 0; i < filtered.length; i++) {
+    this[i] = filtered[i];
   }
-});
-
-function selectElements(vdom, selector) {
-  return nodesWithTagNames((select(selector))(vdom) || []);
+  this.length = filtered.length;
 }
 
-function selectTextNodes(vdom, selector) {
-  return nodesWithText((select(selector))(vdom) || []);
+VDomQuery.prototype.attr = function(name) {
+  return this.length > 0 ? this[0].attribs[name] : undefined;
 }
 
-function nodesWithTagNames(nodes) {
-  return nodes.filter(function(n) {
-    return typeof(n.tagName) === 'string';
-  })
+VDomQuery.prototype.children = function(selector) {
+  var children = this.get().reduce(function(m, e) {
+    return m.concat(e.children);
+  }, []);
+  if (selector) {
+    children = children.filter(function(child) {
+      return cssSelect.is(child, selector);
+    });
+  }
+  return new VDomQuery(children);
 }
 
-function nodesWithText(nodes) {
-  return nodes.filter(function(n) {
-    return typeof(n.text) === 'string';
-  })
+VDomQuery.prototype.eq = function(index) {
+  var element = this.get(index);
+  return new VDomQuery(element ? [element] : []);
 }
 
-function createSelectIterator(prev, selector, nodeFilter, toString) {
-  return function() {
-    var prevIterator = prev.createIterator();
-    if (typeof(prevIterator.selector) == 'string') {
-      prevIterator.selector = appendSelector(prevIterator.selector, selector);
-      prevIterator.nodeFilter = nodeFilter;
-      if (toString) {
-        prevIterator.toString = function() {
-          return toString(prev);
-        };
-      }
-      return prevIterator;
+VDomQuery.prototype.filter = function(predicate) {
+  var results = [];
+  for (var i = 0; i < this.length; ++i) {
+    if (predicate(this[i])) {
+      results.push(this[i]);
     }
+  }
+  return results;
+}
 
-    var iterator;
-    function ensureSelected(i) {
-      if (!iterator) {
-        vdom = prevIterator.next();
-        if (vdom) {
-          var selectedElements = i.nodeFilter(vdom, i.selector);
-          iterator = vdollar(selectedElements).createIterator();
-        }
-        else
-          iterator = vdollar([]).createIterator();
+VDomQuery.prototype.find = function(selector) {
+  var children = this.get().reduce(function(m, e) {
+    return m.concat(e.children);
+  }, []);
+  return new VDomQuery(children, selector);
+}
 
-        iterator.selector = selector;
+VDomQuery.prototype.first = function(selector) {
+  return this.eq(0);
+}
+
+VDomQuery.prototype.has = function(selector) {
+  var filtered = [];
+  for (var i = 0; i < this.length; ++i) {
+    if (cssSelect.selectOne(selector, this[i].children)) {
+      filtered.push(this[i]);
+    }
+  }
+  return new VDomQuery(filtered);
+}
+
+VDomQuery.prototype.is = function(selector) {
+  for (var i = 0; i < this.length; ++i) {
+    if (cssSelect.is(this[i], selector)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+VDomQuery.prototype.get = function(index) {
+  if (typeof(index) == 'undefined') {
+    var array = [];
+    for (var i = 0; i < this.length; i++) { array.push(this[i]); }
+    return array;
+  } else {
+    return index > -1 && index < this.length ? [this[index]] : undefined;
+  }
+}
+
+VDomQuery.prototype.map = function(fn) {
+  var results = [];
+  for (var i = 0; i < this.length; ++i) {
+    results.push(fn(this[i]));
+  }
+  return results;
+}
+
+VDomQuery.prototype.next = function(selector) {
+  var nexts = this.map(function(el) {
+    return el.next;
+  }).filter(function(el) {
+    return !!el;
+  });
+  return new VDomQuery(nexts, selector);
+}
+
+function convertVNode(vnode, parent) {
+  // console.log(vdom, null, false);
+  var node = {};
+  if ('text' in vnode) {
+    node.type = 'text';
+    node.data = vnode.text;
+  }
+  else {
+    node.type = 'tag';
+  }
+  node.attribs = {};
+  if (vnode.properties) {
+    for (var key in vnode.properties.attributes) {
+      node.attribs[key] = vnode.properties.attributes[key];
+    }
+    for (var key in vnode.properties) {
+      if (key != 'attributes') {
+        node.attribs[key] = vnode.properties[key];
       }
     }
-    return {
-      op: "selector",
-      parent: prevIterator,
-      selector: selector,
-      nodeFilter: nodeFilter,
-      next: function() {
-        ensureSelected(this);
-        return iterator.next();
-      },
-      hasNext: function() {
-        ensureSelected(this);
-        return iterator.hasNext();
-      },
-      toString: function() {
-        if (this.selector.indexOf(':root') == 0) {
-          return 'V$("' + this.selector.replace(/:root\s*/, '') + '")';
-        }
-        return prev.toString() + '.find("' + this.selector + '")';
-      }
-    };
+  }
+
+  if ('tagName' in vnode) {
+    node.name = vnode.tagName.toLowerCase();
+  }
+  if ('children' in vnode) {
+    node.children = vnode.children.map(function convertChild(child) {
+      return convertVNode(child, node);
+    });
+    for (var i = 0; i < node.children.length; i++) {
+      node.children[i].prev = node.children[i - 1] || null;
+      node.children[i].next = node.children[i + 1] || null;
+    }
+  } else {
+    node.children = [];
+  }
+  node.parent = parent;
+  node.next = null;
+  node.prev = null;
+  return node;
+}
+
+function createVDomQuery(vwindow) {
+  return function vDomQuery(selector) {
+    return new VDomQuery([convertVNode(vwindow.document)], selector);
   };
-};
-
-function appendSelector(selector, addition) {
-  var selectorParts = selector.split(/\s*,\s*/);
-  var additionParts = addition.split(/\s*,\s*/);
-
-  return selectorParts.map(function(p1) {
-    return additionParts.map(function(p2) {
-      return p1 + ' ' + p2;
-    }).join(', ')
-  }).join(', ');
 }
 
-module.exports = function(render) {
-  return dollar(function() {
-    return [render()];
-  }).find(":root");
-}
+module.exports = createVDomQuery;
