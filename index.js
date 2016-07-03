@@ -5,10 +5,10 @@ function VDomQuery(nodes, selector) {
     var selected = selector ? cssSelect(selector, nodes) : nodes;
     copyArray(selected, this);
     this.length = selected.length;
-  } else {
-    this.length = 0;
   }
 }
+
+VDomQuery.prototype.length = 0;
 
 VDomQuery.prototype.attr = function(name) {
   return this.length > 0 ? this[0].attribs[name] : undefined;
