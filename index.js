@@ -84,13 +84,7 @@ VDomQuery.prototype.map = function(fn) {
 }
 
 VDomQuery.prototype.next = function(selector) {
-  var nexts = [];
-  for (var i = 0; i < this.length; ++i) {
-    if (this[i].next) {
-      nexts.push(this[i].next);
-    }
-  }
-  return new VDomQuery(nexts, selector);
+  return new VDomQuery(pluckTruthy(this, 'next'), selector);
 }
 
 VDomQuery.prototype.not = function(selector) {
@@ -100,13 +94,7 @@ VDomQuery.prototype.not = function(selector) {
 }
 
 VDomQuery.prototype.prev = function(selector) {
-  var nexts = [];
-  for (var i = 0; i < this.length; ++i) {
-    if (this[i].prev) {
-      nexts.push(this[i].prev);
-    }
-  }
-  return new VDomQuery(nexts, selector);
+  return new VDomQuery(pluckTruthy(this, 'prev'), selector);
 }
 
 VDomQuery.prototype.slice = function(start, end) {
@@ -121,6 +109,15 @@ function copyArray(from, to) {
   for (var i = 0; i < from.length; i++) {
     to[i] = from[i];
   }
+}
+
+function pluckTruthy(array, property) {
+  var plucked = [];
+  for (var i = 0; i < array.length; ++i) {
+    var v = array[i][property];
+    if (v) { plucked.push(v); }
+  }
+  return plucked;
 }
 
 function childrenOf(node) {
