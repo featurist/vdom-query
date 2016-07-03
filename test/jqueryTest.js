@@ -6,6 +6,7 @@ var htmlToVDom = require('html-to-vdom')({
 });
 
 var html =  '<html>' +
+              '<head></head>' +
               '<body id="main">' +
                 '<div class="a">' +
                   '<div class="b">' +
@@ -111,10 +112,10 @@ describe('with ' + html, function() {
 
   describe('.html()', function() {
     assert(function($) { return $('.c').html() }, 'X<span>Y</span>');
-    assert(function($) { return $('.a').html() }, '<div class="b"><span class="c" d="e" e="ab- c de">X<span>Y</span></span>ZZ</div><div class="d">DD</div><div class="e">EE</div>');
     assert(function($) { return $('.c, .d').html() }, 'X<span>Y</span>');
     assert(function($) { return $('span span').html() }, 'Y');
     assert(function($) { return $('.yo').html() }, undefined);
+    assert(function($) { return $('html').html().length }, 183);
   });
 
   describe('.is(selector)', function() {

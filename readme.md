@@ -29,8 +29,7 @@ require('vdom-query')(vdom);
 * `vdom` - a virtual DOM fragment.
 
 The resulting vdom-query object represents a set of elements, which can be
-manipulated to produce new sets. Every set can extract data or interact with its
-matching elements.
+traversed and manipulated to produce new sets.
 
 ### .attr(name)
 Get the value of an attribute for the first element in the set of matched
@@ -95,9 +94,6 @@ optionally filtered by a selector.
 ### .not(selector)
 Remove elements matching the selector, from the set of matched elements.
 
-### .outerHtml()
-Get the HTML of the first element in the set of matched elements.
-
 ### .parent([selector])
 Get the parent of each element in the current set of matched elements,
 optionally filtered by a selector.
@@ -120,6 +116,11 @@ Reduce the set of matched elements to a subset specified by a range of indices.
 ### .text()
 Get the combined text contents of each element in the set of matched elements,
 including their descendants.
+
+## Extras
+
+### .outerHtml()
+Get the outer HTML of the first element in the set of matched elements.
 
 # Work in progress
 
