@@ -89,6 +89,12 @@ describe('with ' + html, function() {
     assert(function($) { return $('div').is('span') }, false);
   });
 
+  describe('.last()', function() {
+    assert(function($) { return $('*').last().length }, 1);
+    assert(function($) { return $('zz').last().length }, 0);
+    assert(function($) { return $('.b, .a').last().attr('class') }, 'b');
+  });
+
   describe('.next([selector])', function() {
     assert(function($) { return $('.b').next().length }, 1);
     assert(function($) { return $('.a').next().length }, 0);
@@ -115,6 +121,7 @@ describe('with ' + html, function() {
     assert(function($) { return $('.a, .b, .c').slice(1, 2).length }, 1);
     assert(function($) { return $('.a, .b, .c').slice(0, 2).length }, 2);
     assert(function($) { return $('*').slice(2, 5).length }, 3);
+    assert(function($) { return $('*').slice(-1, 2).length }, 0);
   });
 
   var jQuery, vdomQuery;

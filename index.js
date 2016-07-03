@@ -25,7 +25,7 @@ VDomQuery.prototype.children = function(selector) {
 }
 
 VDomQuery.prototype.eq = function(index) {
-  return this.slice(0, 1);
+  return this.slice(index, index + 1);
 }
 
 VDomQuery.prototype.filter = function(predicate) {
@@ -36,7 +36,7 @@ VDomQuery.prototype.find = function(selector) {
   return new VDomQuery(childrenOf(this), selector);
 }
 
-VDomQuery.prototype.first = function(selector) {
+VDomQuery.prototype.first = function() {
   return this.eq(0);
 }
 
@@ -65,6 +65,10 @@ VDomQuery.prototype.get = function(index) {
   }
 }
 
+VDomQuery.prototype.last = function() {
+  return this.eq(this.length - 1);
+}
+
 VDomQuery.prototype.map = function(fn) {
   var results = [];
   for (var i = 0; i < this.length; ++i) {
@@ -88,6 +92,7 @@ VDomQuery.prototype.prev = function(selector) {
 }
 
 VDomQuery.prototype.slice = function(start, end) {
+  if (start < 0) return new VDomQuery([]);
   var sliced = [];
   for (var i = start; (!end || i < end) && i < this.length; ++i) {
     sliced.push(this[i]);
