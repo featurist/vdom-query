@@ -1,11 +1,9 @@
 var cssSelect = require('css-select');
 
-function VDomQuery(domNodes, selector) {
-  var filtered = selector ? cssSelect(selector, domNodes) : domNodes;
-  for (var i = 0; i < filtered.length; i++) {
-    this[i] = filtered[i];
-  }
-  this.length = filtered.length;
+function VDomQuery(nodes, selector) {
+  var selected = selector ? cssSelect(selector, nodes) : nodes;
+  copyArray(selected, this);
+  this.length = selected.length;
 }
 
 VDomQuery.prototype.attr = function(name) {
@@ -13,10 +11,8 @@ VDomQuery.prototype.attr = function(name) {
 }
 
 VDomQuery.prototype.children = function(selector) {
-  var children = this.get().reduce(function(m, e) {
-    return m.concat(e.children);
-  }, []);
-  if (selector) {
+  var children = childrenOf(this);
+  if (typeof(selector) == 'string') {
     children = children.filter(function(child) {
       return cssSelect.is(child, selector);
     });
@@ -40,10 +36,7 @@ VDomQuery.prototype.filter = function(predicate) {
 }
 
 VDomQuery.prototype.find = function(selector) {
-  var children = this.get().reduce(function(m, e) {
-    return m.concat(e.children);
-  }, []);
-  return new VDomQuery(children, selector);
+  return new VDomQuery(childrenOf(this), selector);
 }
 
 VDomQuery.prototype.first = function(selector) {
@@ -72,10 +65,10 @@ VDomQuery.prototype.is = function(selector) {
 VDomQuery.prototype.get = function(index) {
   if (typeof(index) == 'undefined') {
     var array = [];
-    for (var i = 0; i < this.length; i++) { array.push(this[i]); }
+    copyArray(this, array);
     return array;
   } else {
-    return index > -1 && index < this.length ? [this[index]] : undefined;
+    return index >= 0 && index < this.length ? [this[index]] : undefined;
   }
 }
 
@@ -88,12 +81,43 @@ VDomQuery.prototype.map = function(fn) {
 }
 
 VDomQuery.prototype.next = function(selector) {
-  var nexts = this.map(function(el) {
-    return el.next;
-  }).filter(function(el) {
-    return !!el;
-  });
+  var nexts = [];
+  for (var i = 0; i < this.length; ++i) {
+    if (this[i].next) {
+      nexts.push(this[i].next);
+    }
+  }
   return new VDomQuery(nexts, selector);
+}
+
+VDomQuery.prototype.not = function(selector) {
+  return new VDomQuery(this.filter(function(el) {
+    return !cssSelect.is(el, selector);
+  }));
+}
+
+VDomQuery.prototype.prev = function(selector) {
+  var nexts = [];
+  for (var i = 0; i < this.length; ++i) {
+    if (this[i].prev) {
+      nexts.push(this[i].prev);
+    }
+  }
+  return new VDomQuery(nexts, selector);
+}
+
+function copyArray(from, to) {
+  for (var i = 0; i < from.length; i++) {
+    to[i] = from[i];
+  }
+}
+
+function childrenOf(node) {
+  var results = [];
+  for (var i = 0; i < node.length; ++i) {
+    results = results.concat(node[i].children || []);
+  }
+  return results;
 }
 
 function convertVNode(vnode, parent) {

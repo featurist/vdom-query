@@ -69,12 +69,6 @@ describe('with ' + html, function() {
     assert(function($) { return $('zzz').get(0) }, undefined);
   });
 
-  describe('.is(selector)', function() {
-    assert(function($) { return $('div.a').is('#a') }, true);
-    assert(function($) { return $('div').is('div') }, true);
-    assert(function($) { return $('div').is('span') }, false);
-  });
-
   describe('.has(selector)', function() {
     assert(function($) { return $('div').has('div').length }, 1);
     assert(function($) { return $('div').has('span').length }, 2);
@@ -82,10 +76,29 @@ describe('with ' + html, function() {
     assert(function($) { return $('span').has('div').length }, 0);
   });
 
+  describe('.is(selector)', function() {
+    assert(function($) { return $('div.a').is('#a') }, true);
+    assert(function($) { return $('div').is('div') }, true);
+    assert(function($) { return $('div').is('span') }, false);
+  });
+
   describe('.next([selector])', function() {
     assert(function($) { return $('.b').next().length }, 1);
     assert(function($) { return $('.b').next('.d').length }, 1);
     assert(function($) { return $('.b').next('.e').length }, 0);
+  });
+
+  describe('.not(selector)', function() {
+    assert(function($) { return $('.a, .b, .c').not('.b').length }, 2);
+    assert(function($) { return $('.a, .b').not('.a').not('.b').length }, 0);
+    assert(function($) { return $('.c').not('.c').length }, 0);
+    assert(function($) { return $('*').not('*').length }, 0);
+  });
+
+  describe('.prev([selector])', function() {
+    assert(function($) { return $('.d').prev().length }, 1);
+    assert(function($) { return $('.d').prev('.b').length }, 1);
+    assert(function($) { return $('.a').prev('.e').length }, 0);
   });
 
   var jQuery, vdomQuery;
