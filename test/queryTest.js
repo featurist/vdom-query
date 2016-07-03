@@ -290,4 +290,20 @@ describe('form', function(){
       expect(submitted).to.be.true;
     });
   });
+
+  describe('input[type=text]', function(){
+    it('can submit a parent form', function(){
+      var submitted = false
+      function onsubmit(){
+        submitted = true;
+      }
+      var vdom = h('form',
+        {onsubmit: onsubmit},
+        h('div', h('input', {type: 'text'}))
+      );
+
+      $(vdom).find('input').trigger('submit');
+      expect(submitted).to.be.true;
+    });
+  });
 });

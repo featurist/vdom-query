@@ -148,6 +148,16 @@ function nodeToTarget(node){
   }
 }
 
+function submitForm(node) {
+  var potentialForm = node.parent;
+  while(potentialForm && potentialForm.tagName !== 'FORM') {
+    potentialForm = potentialForm.parent;
+  }
+  if (potentialForm) {
+    v$(potentialForm).trigger('submit');
+  }
+}
+
 function trigger(eventName, data) {
   data = data || {};
 
@@ -158,9 +168,10 @@ function trigger(eventName, data) {
     data.currentTarget = data.currentTarget || nodeToTarget(node);
     data.target = data.target || nodeToTarget(node);
     data.eventPhase = data.eventPhase || 2;
+    var nodeType = (node.properties.type || '').toLowerCase();
 
     if (data.eventPhase === 2 && eventName === 'click') {
-      if (node.tagName === 'INPUT' && (node.properties.type === 'checkbox' || node.properties.type === 'radio')) {
+      if (node.tagName === 'INPUT' && (nodeType === 'checkbox' || nodeType === 'radio')) {
         var $node = v$(node);
         $node.prop('checked', !$node.prop('checked'));
       }
@@ -169,23 +180,22 @@ function trigger(eventName, data) {
         v$(node).find('input[type=checkbox],input[type=radio]').trigger('click', data);
       }
 
-      if (node.tagName === 'BUTTON' && (node.properties.type || '').toLowerCase() === 'submit') {
-        var potentialForm = node.parent;
-        while(potentialForm && potentialForm.tagName !== 'FORM') {
-          potentialForm = potentialForm.parent;
-        }
-        if (potentialForm) {
-          v$(potentialForm).trigger('submit');
-        }
+      if (node.tagName === 'BUTTON' && nodeType === 'submit') {
+        submitForm(node);
       }
     }
+
+    if (node.tagName === 'INPUT' && nodeType === 'text' && eventName === 'submit') {
+      submitForm(node);
+    }
+
     node.properties = node.properties || {};
     var events = (node.properties['on'+eventName] || []);
     if (!(events instanceof Array)) {
       events = [events];
     }
     events.forEach(function(handler){
-      handler.bind(data.target)(data);
+      handler.bind(node)(data);
     });
   });
 }

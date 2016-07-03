@@ -30,7 +30,7 @@ describe('trigger()', function(){
     $(vdom).find('.x').trigger('click');
 
     expect(clickEvent).to.not.be.undefined;
-    expect(clickEventThis).to.equal(clickEvent.target);
+    expect(clickEventThis).to.equal(vdom);
     expect(clickEvent.target.id).to.equal('clicker');
   });
 
