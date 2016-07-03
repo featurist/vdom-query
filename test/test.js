@@ -24,9 +24,12 @@ describe('with ' + html, function() {
     assert(function($) { return $('div > span').length }, 1);
     assert(function($) { return $('div, span').length }, 5);
     assert(function($) { return $('.a, .b').length }, 2);
-    assert(function($) { return $('.a, .b, .c').get().map(function(el) {
-        return (el.tagName || el.name).toLowerCase();
-      }) }, ['div', 'div', 'span']);
+    assert(function($) { return tagNamesOf($('.a, .b, .c')) }, ['div', 'div', 'span']);
+  });
+
+  describe('$($(selector))', function() {
+    assert(function($) { return $($('SPAN')).length }, 2);
+    assert(function($) { return $([$('span').get(0), $('div').get(0)]).length }, 2);
   });
 
   describe('.attr(name)', function() {
@@ -154,5 +157,11 @@ describe('with ' + html, function() {
         });
       })
     })
+  }
+
+  function tagNamesOf(query) {
+    return query.get().map(function(el) {
+      return (el.tagName || el.name).toLowerCase();
+    });
   }
 });

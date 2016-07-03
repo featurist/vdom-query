@@ -176,7 +176,13 @@ function convertVNode(vnode, parent) {
 
 function createVDomQuery(vwindow) {
   return function vDomQuery(selector) {
-    return new VDomQuery([convertVNode(vwindow.document)], selector);
+    if (typeof(selector) == 'string') {
+      return new VDomQuery([convertVNode(vwindow.document)], selector);
+    } else if (typeof(selector.get) == 'function') {
+      return selector;
+    } else if (typeof(selector.length) == 'number') {
+      return new VDomQuery(selector);
+    }
   };
 }
 
