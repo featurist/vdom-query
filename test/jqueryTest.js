@@ -24,8 +24,13 @@ describe('with ' + html, function() {
     assert(function($) { return $('SPAN').length }, 2);
     assert(function($) { return $('span').length }, 2);
     assert(function($) { return $('.a').length }, 1);
+    assert(function($) { return $('[class]').length }, 5);
     assert(function($) { return $('*[id]').length }, 1);
+    assert(function($) { return $('.c[d]').length }, 1);
+    assert(function($) { return $('.c[d=e]').length }, 1);
+    assert(function($) { return $('.c[d=z]').length }, 0);
     assert(function($) { return $('div span').length }, 2);
+    assert(function($) { return $('.a .b > .c').length }, 1);
     assert(function($) { return $('div > span').length }, 1);
     assert(function($) { return $('div, span').length }, 6);
     assert(function($) { return $('.a, .b').length }, 2);
@@ -34,7 +39,6 @@ describe('with ' + html, function() {
     assert(function($) { return $('.b + .e').length }, 0);
     assert(function($) { return $('.b ~ .d').length }, 1);
     assert(function($) { return $('.d ~ .b').length }, 0);
-    assert(function($) { return tagNamesOf($('.a, .b, .c')) }, ['div', 'div', 'span']);
   });
 
   describe('$($(selector))', function() {
@@ -229,11 +233,5 @@ describe('with ' + html, function() {
         });
       })
     })
-  }
-
-  function tagNamesOf(query) {
-    return query.get().map(function(el) {
-      return (el.tagName || el.name).toLowerCase();
-    });
   }
 });
