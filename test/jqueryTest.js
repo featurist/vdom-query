@@ -20,6 +20,7 @@ describe('with ' + html, function() {
     assert(function($) { return $('span').length }, 2);
     assert(function($) { return $('.a').length }, 1);
     assert(function($) { return $('#a').length }, 1);
+    assert(function($) { return $('#a, .a').length }, 1);
     assert(function($) { return $('div span').length }, 2);
     assert(function($) { return $('div > span').length }, 1);
     assert(function($) { return $('div, span').length }, 5);
@@ -103,6 +104,11 @@ describe('with ' + html, function() {
     assert(function($) { return $('.b, .a').last().attr('class') }, 'b');
   });
 
+  describe('.map(function)', function() {
+    assert(function($) { return $('.a').map(function() { return $(this).attr('class'); }).get() }, ['a']);
+    assert(function($) { return $('div').map(function(i) { return i; }).get() }, [0,1,2]);
+  });
+
   describe('.next([selector])', function() {
     assert(function($) { return $('.b').next().length }, 1);
     assert(function($) { return $('.a').next().length }, 0);
@@ -115,6 +121,13 @@ describe('with ' + html, function() {
     assert(function($) { return $('.a, .b').not('.a').not('.b').length }, 0);
     assert(function($) { return $('.c').not('.c').length }, 0);
     assert(function($) { return $('*').not('*').length }, 0);
+  });
+
+  describe('.parent([selector])', function() {
+    assert(function($) { return $('.c').parent().length }, 1);
+    assert(function($) { return $('.c').parent('.b').length }, 1);
+    assert(function($) { return $('.c').parent('*').length }, 1);
+    assert(function($) { return $('.c').parent('.zz').length }, 0);
   });
 
   describe('.prev([selector])', function() {

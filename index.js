@@ -72,13 +72,13 @@ VDomQuery.prototype.last = function() {
 VDomQuery.prototype.map = function(fn) {
   var results = [];
   for (var i = 0; i < this.length; ++i) {
-    results.push(fn(this[i]));
+    results.push(fn.apply(this[i], [i]));
   }
-  return results;
+  return new VDomQuery(results);
 }
 
 VDomQuery.prototype.next = function(selector) {
-  return new VDomQuery(pluckTruthy(this, 'next'), selector);
+  return new VDomQuery(pluckSelect(this, 'next', selector));
 }
 
 VDomQuery.prototype.not = function(selector) {
@@ -87,8 +87,12 @@ VDomQuery.prototype.not = function(selector) {
   }));
 }
 
+VDomQuery.prototype.parent = function(selector) {
+  return new VDomQuery(pluckSelect(this, 'parent', selector));
+}
+
 VDomQuery.prototype.prev = function(selector) {
-  return new VDomQuery(pluckTruthy(this, 'prev'), selector);
+  return new VDomQuery(pluckSelect(this, 'prev', selector));
 }
 
 VDomQuery.prototype.slice = function(start, end) {
@@ -116,11 +120,13 @@ function copyArray(from, to) {
   }
 }
 
-function pluckTruthy(array, property) {
+function pluckSelect(array, property, selector) {
   var plucked = [];
   for (var i = 0; i < array.length; ++i) {
     var v = array[i][property];
-    if (v) { plucked.push(v); }
+    if (v && (!selector || cssSelect.is(v, selector))) {
+      plucked.push(v);
+    }
   }
   return plucked;
 }
@@ -186,6 +192,8 @@ function createVDomQuery(vdom) {
       return selector;
     } else if (typeof(selector.length) == 'number') {
       return new VDomQuery(selector);
+    } else {
+      return new VDomQuery([selector]);
     }
   };
 }

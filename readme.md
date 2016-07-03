@@ -84,9 +84,6 @@ Get the HTML of the first element in the set of matched elements.
 ### .parent()
 Get the parent of each element in the current set of matched elements.
 
-### .size()
-Return the number of elements in the vdom-query object.
-
 ### .slice(start, [count])
 Reduce the set of matched elements to a subset specified by a range of indices.
 
