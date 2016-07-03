@@ -19,6 +19,7 @@
     "virtual-dom": "^2.1.1"
   },
   "dependencies": {
-    "css-select": "^1.2.0"
+    "css-select": "^1.2.0",
+    "vdom-to-html": "^2.3.0"
   }
 }

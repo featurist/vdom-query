@@ -1,4 +1,5 @@
 var cssSelect = require('css-select');
+var vdomToHtml = require('vdom-to-html');
 
 function VDomQuery(nodes, selector) {
   if (nodes && nodes.length) {
@@ -42,6 +43,12 @@ VDomQuery.prototype.has = function(selector) {
     return !!cssSelect.selectOne(selector, element.children);
   }));
 }
+
+VDomQuery.prototype.html = function() {
+  return this.length ? childrenOf([this[0]]).map(function(e) {
+    return vdomToHtml(e.vnode)
+  }).join('') : undefined;
+};
 
 VDomQuery.prototype.is = function(selector) {
   for (var i = 0; i < this.length; ++i) {
@@ -172,7 +179,8 @@ function convertVNode(vnode, parent) {
     parent: parent,
     next: null,
     prev: null,
-    attribs: {}
+    attribs: {},
+    vnode: vnode
   };
   if ('text' in vnode) {
     node.type = 'text';

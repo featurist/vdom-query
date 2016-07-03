@@ -6,14 +6,14 @@ var htmlToVDom = require('html-to-vdom')({
 });
 
 var html =  '<html>' +
-              '<body>' +
-                '<div id="a" class="a">' +
-                  '<div id="b" class="b">' +
+              '<body id="main">' +
+                '<div class="a">' +
+                  '<div class="b">' +
                     '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>' +
                     'ZZ' +
                   '</div>' +
-                  '<div id="d" class="d">DD</div>' +
-                  '<div id="e" class="e">EE</div>' +
+                  '<div class="d">DD</div>' +
+                  '<div class="e">EE</div>' +
                 '</div>' +
               '</body>' +
             '</html>';
@@ -24,13 +24,12 @@ describe('with ' + html, function() {
     assert(function($) { return $('SPAN').length }, 2);
     assert(function($) { return $('span').length }, 2);
     assert(function($) { return $('.a').length }, 1);
-    assert(function($) { return $('#a').length }, 1);
-    assert(function($) { return $('*[id]').length }, 4);
-    assert(function($) { return $('#a, .a').length }, 1);
+    assert(function($) { return $('*[id]').length }, 1);
     assert(function($) { return $('div span').length }, 2);
     assert(function($) { return $('div > span').length }, 1);
     assert(function($) { return $('div, span').length }, 6);
     assert(function($) { return $('.a, .b').length }, 2);
+    assert(function($) { return $('.a, .zzz').length }, 1);
     assert(function($) { return $('.b + .d').length }, 1);
     assert(function($) { return $('.b + .e').length }, 0);
     assert(function($) { return $('.b ~ .d').length }, 1);
@@ -44,14 +43,14 @@ describe('with ' + html, function() {
   });
 
   describe('.attr(name)', function() {
-    assert(function($) { return $('#a').attr('id') }, 'a');
-    assert(function($) { return $('#a').attr('class') }, 'a');
+    assert(function($) { return $('body').attr('id') }, 'main');
+    assert(function($) { return $('.a').attr('class') }, 'a');
     assert(function($) { return $('.c').attr('e') }, 'ab- c de');
-    assert(function($) { return $('#a').attr('missing') }, undefined);
+    assert(function($) { return $('.a').attr('missing') }, undefined);
   });
 
   describe('.children([selector])', function() {
-    assert(function($) { return $('#a').children('missing').length }, 0);
+    assert(function($) { return $('.a').children('missing').length }, 0);
     assert(function($) { return $('div').children('div').children('span').length }, 1);
     assert(function($) { return $('div, span').children('span').length }, 2);
     assert(function($) { return $('missing').children('*').length }, 0);
@@ -69,10 +68,10 @@ describe('with ' + html, function() {
   });
 
   describe('.find(selector)', function() {
-    assert(function($) { return $('#a').find('.b .c').length }, 1);
-    assert(function($) { return $('#a').find('.zzz').length }, 0);
-    assert(function($) { return $('#a').find('.b').find('.c').length }, 1);
-    assert(function($) { return $('#a').find('.b').find('.zzz').length }, 0);
+    assert(function($) { return $('.a').find('.b .c').length }, 1);
+    assert(function($) { return $('.a').find('.zzz').length }, 0);
+    assert(function($) { return $('.a').find('.b').find('.c').length }, 1);
+    assert(function($) { return $('.a').find('.b').find('.zzz').length }, 0);
   });
 
   describe('.first()', function() {
@@ -98,9 +97,18 @@ describe('with ' + html, function() {
     assert(function($) { return $('span').has('div').length }, 0);
   });
 
+  describe('.html()', function() {
+    assert(function($) { return $('.c').html() }, 'X<span>Y</span>');
+    assert(function($) { return $('.a').html() }, '<div class="b"><span class="c" d="e" e="ab- c de">X<span>Y</span></span>ZZ</div><div class="d">DD</div><div class="e">EE</div>');
+    assert(function($) { return $('.c, .d').html() }, 'X<span>Y</span>');
+    assert(function($) { return $('span span').html() }, 'Y');
+    assert(function($) { return $('.yo').html() }, undefined);
+  });
+
   describe('.is(selector)', function() {
-    assert(function($) { return $('div.a').is('#a') }, true);
+    assert(function($) { return $('div.a').is('.a') }, true);
     assert(function($) { return $('div').is('div') }, true);
+    assert(function($) { return $('div.b').is('.a, div') }, true);
     assert(function($) { return $('div').is('span') }, false);
   });
 
