@@ -104,6 +104,10 @@ VDomQuery.prototype.prevAll = function(selector) {
   return pluckSelectAll(this, 'prev', selector);
 }
 
+VDomQuery.prototype.siblings = function(selector) {
+  return new VDomQuery(this.prevAll(selector).get().concat(this.nextAll(selector).get()));
+}
+
 VDomQuery.prototype.slice = function(start, end) {
   if (start < 0) return new VDomQuery([]);
   var sliced = new VDomQuery();

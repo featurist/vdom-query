@@ -163,8 +163,16 @@ describe('with ' + html, function() {
   describe('.prevAll([selector])', function() {
     assert(function($) { return $('.e').prevAll().length }, 2);
     assert(function($) { return $('.e').prevAll('.b').length }, 1);
+    assert(function($) { return $('.d').prevAll('.b, .e').length }, 1);
     assert(function($) { return $('.e').prevAll('.z').length }, 0);
     assert(function($) { return $('.y').prevAll('.z').length }, 0);
+  });
+
+  describe('.siblings([selector])', function() {
+    assert(function($) { return $('.e').siblings().length }, 2);
+    assert(function($) { return $('.d').siblings('.b, .e').length }, 2);
+    assert(function($) { return $('.e').siblings('.z').length }, 0);
+    assert(function($) { return $('.y').siblings('.z').length }, 0);
   });
 
   describe('.slice(start [, end])', function() {
