@@ -5,13 +5,18 @@ var htmlToVDom = require('html-to-vdom')({
   VText: require('virtual-dom/vnode/vtext')
 });
 
-var html = '<div id="a" class="a">' +
-             '<div id="b" class="b">' +
-               '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>' +
-               'ZZ' +
-             '</div>' +
-             '<div id="d" class="d">DD</div>' +
-           '</div>';
+var html =  '<html>' +
+              '<body>' +
+                '<div id="a" class="a">' +
+                  '<div id="b" class="b">' +
+                    '<span class="c" d="e" e="ab- c de">X<span>Y</span></span>' +
+                    'ZZ' +
+                  '</div>' +
+                  '<div id="d" class="d">DD</div>' +
+                  '<div id="e" class="e">EE</div>' +
+                '</div>' +
+              '</body>' +
+            '</html>';
 
 describe('with ' + html, function() {
 
@@ -20,10 +25,11 @@ describe('with ' + html, function() {
     assert(function($) { return $('span').length }, 2);
     assert(function($) { return $('.a').length }, 1);
     assert(function($) { return $('#a').length }, 1);
+    assert(function($) { return $('*[id]').length }, 4);
     assert(function($) { return $('#a, .a').length }, 1);
     assert(function($) { return $('div span').length }, 2);
     assert(function($) { return $('div > span').length }, 1);
-    assert(function($) { return $('div, span').length }, 5);
+    assert(function($) { return $('div, span').length }, 6);
     assert(function($) { return $('.a, .b').length }, 2);
     assert(function($) { return $('.b + .d').length }, 1);
     assert(function($) { return $('.b + .e').length }, 0);
@@ -59,7 +65,7 @@ describe('with ' + html, function() {
 
   describe('.filter(predicate)', function() {
     assert(function($) { return $('div, span').filter(function() { return false; }).length }, 0);
-    assert(function($) { return $('div, span').filter(function() { return true; }).length }, 5);
+    assert(function($) { return $('span').filter(function() { return true; }).length }, 2);
   });
 
   describe('.find(selector)', function() {
@@ -106,7 +112,7 @@ describe('with ' + html, function() {
 
   describe('.map(function)', function() {
     assert(function($) { return $('.a').map(function() { return $(this).attr('class'); }).get() }, ['a']);
-    assert(function($) { return $('div').map(function(i) { return i; }).get() }, [0,1,2]);
+    assert(function($) { return $('div').map(function(i) { return i; }).get() }, [0,1,2,3]);
   });
 
   describe('.next([selector])', function() {
@@ -114,6 +120,15 @@ describe('with ' + html, function() {
     assert(function($) { return $('.a').next().length }, 0);
     assert(function($) { return $('.b').next('.d').length }, 1);
     assert(function($) { return $('.b').next('.e').length }, 0);
+  });
+
+  describe('.nextAll([selector])', function() {
+    assert(function($) { return $('.b').nextAll().length }, 2);
+    assert(function($) { return $('.d').nextAll().length }, 1);
+    assert(function($) { return $('.c').nextAll().length }, 0);
+    assert(function($) { return $('.b').nextAll('.d').length }, 1);
+    assert(function($) { return $('.b').nextAll('.d, .e').length }, 2);
+    assert(function($) { return $('.b').nextAll('.z').length }, 0);
   });
 
   describe('.not(selector)', function() {
@@ -125,9 +140,17 @@ describe('with ' + html, function() {
 
   describe('.parent([selector])', function() {
     assert(function($) { return $('.c').parent().length }, 1);
+    assert(function($) { return $('html').parent().parent().get(0) }, undefined);
+    assert(function($) { return $('.z').parent().length }, 0);
     assert(function($) { return $('.c').parent('.b').length }, 1);
     assert(function($) { return $('.c').parent('*').length }, 1);
     assert(function($) { return $('.c').parent('.zz').length }, 0);
+  });
+
+  describe('.parents([selector])', function() {
+    assert(function($) { return $('.c').parents().length }, 4);
+    assert(function($) { return $('.c').parents('div').length }, 2);
+    assert(function($) { return $('.c').parents('html').length }, 1);
   });
 
   describe('.prev([selector])', function() {

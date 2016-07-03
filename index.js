@@ -15,13 +15,10 @@ VDomQuery.prototype.attr = function(name) {
 }
 
 VDomQuery.prototype.children = function(selector) {
-  var children = childrenOf(this);
-  if (typeof(selector) == 'string') {
-    children = filter(children, function(child) {
+  return new VDomQuery(typeof(selector) == 'string' ?
+    filter(childrenOf(this), function(child) {
       return cssSelect.is(child, selector);
-    });
-  }
-  return new VDomQuery(children);
+    }) : childrenOf(this));
 }
 
 VDomQuery.prototype.eq = function(index) {
@@ -81,6 +78,10 @@ VDomQuery.prototype.next = function(selector) {
   return new VDomQuery(pluckSelect(this, 'next', selector));
 }
 
+VDomQuery.prototype.nextAll = function(selector) {
+  return new VDomQuery(pluckSelectAll(this, 'next', selector));
+}
+
 VDomQuery.prototype.not = function(selector) {
   return new VDomQuery(this.filter(function(el) {
     return !cssSelect.is(el, selector);
@@ -89,6 +90,10 @@ VDomQuery.prototype.not = function(selector) {
 
 VDomQuery.prototype.parent = function(selector) {
   return new VDomQuery(pluckSelect(this, 'parent', selector));
+}
+
+VDomQuery.prototype.parents = function(selector) {
+  return new VDomQuery(pluckSelectAll(this, 'parent', selector));
 }
 
 VDomQuery.prototype.prev = function(selector) {
@@ -124,11 +129,22 @@ function pluckSelect(array, property, selector) {
   var plucked = [];
   for (var i = 0; i < array.length; ++i) {
     var v = array[i][property];
-    if (v && (!selector || cssSelect.is(v, selector))) {
+    if (v && v.type == 'tag' && (!selector || cssSelect.is(v, selector))) {
       plucked.push(v);
     }
   }
   return plucked;
+}
+
+function pluckSelectAll(array, property, selector) {
+  var plucked = [];
+  for (var i = 0; i < array.length; ++i) {
+    var v = array[i][property];
+    if (v && v.type == 'tag') {
+      plucked = plucked.concat([v]).concat(pluckSelectAll([v], property, selector));
+    }
+  }
+  return selector ? filter(plucked, function(e) { return cssSelect.is(e, selector) } ) : plucked;
 }
 
 function childrenOf(node) {
@@ -140,7 +156,11 @@ function childrenOf(node) {
 }
 
 function convertVNode(vnode, parent) {
-  var node = {};
+  var node = {
+    parent: parent,
+    next: null,
+    prev: null
+  };
   if ('text' in vnode) {
     node.type = 'text';
     node.data = vnode.text;
@@ -163,7 +183,6 @@ function convertVNode(vnode, parent) {
       }
     }
   }
-
   if ('tagName' in vnode) {
     node.name = vnode.tagName.toLowerCase();
   }
@@ -178,16 +197,14 @@ function convertVNode(vnode, parent) {
   } else {
     node.children = [];
   }
-  node.parent = parent;
-  node.next = null;
-  node.prev = null;
   return node;
 }
 
 function createVDomQuery(vdom) {
+  var dom = convertVNode(vdom);
   return function vDomQuery(selector) {
     if (typeof(selector) == 'string') {
-      return new VDomQuery([convertVNode(vdom)], selector);
+      return new VDomQuery([dom], selector);
     } else if (typeof(selector.get) == 'function') {
       return selector;
     } else if (typeof(selector.length) == 'number') {
