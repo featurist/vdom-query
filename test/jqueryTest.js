@@ -61,6 +61,10 @@ describe('with ' + html, function() {
     assert(function($) { return $('missing').children('*').length }, 0);
   });
 
+  describe('.each(function)', function() {
+    assert(function($) { var x = 1; $('span').each(function() { x++ }); return x; }, 3);
+  });
+
   describe('.eq(index)', function() {
     assert(function($) { return $('zzz').eq(1).length }, 0);
     assert(function($) { return $('.a, .b, .c').eq(1).length }, 1);
@@ -224,7 +228,7 @@ describe('with ' + html, function() {
 
   function assert(fn, expectedValue) {
     var expression = fn.toString()
-      .replace(/^function \(\$\) { return\s+/, '')
+      .replace(/^function \(\$\) { (return\s+)?/, '')
       .replace(/\s*}\s*$/, '')
 
     describe(expression, function() {

@@ -22,6 +22,21 @@ VDomQuery.prototype.children = function(selector) {
     }) : childrenOf(this));
 }
 
+VDomQuery.prototype.click = function() {
+  this.each(function(element) {
+    var vnode = element.vnode;
+    if (vnode.properties.onclick) {
+      vnode.properties.onclick({ target: vnode });
+    }
+  });
+}
+
+VDomQuery.prototype.each = function(fn) {
+  for (var i = 0; i < this.length; ++i) {
+    fn(this[i]);
+  }
+}
+
 VDomQuery.prototype.eq = function(index) {
   return this.slice(index, index + 1);
 }
