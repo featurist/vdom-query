@@ -1,3 +1,10 @@
+function functionName(fun) {
+  var ret = fun.toString();
+  ret = ret.substr('function '.length);
+  ret = ret.substr(0, ret.indexOf('('));
+  return ret;
+}
+
 function daisyChain(chainables, chainBreakers) {
   chainBreakers = chainBreakers || [];
 
@@ -15,13 +22,13 @@ function daisyChain(chainables, chainBreakers) {
   }
 
   function addChainableToPrototype(func) {
-    Daisy.prototype[func.name] = function() {
+    Daisy.prototype[functionName(func)] = function() {
       return applyTransform.call(this, func, toArray(arguments));
     };
   }
 
   function addChainBreakerToPrototype(func) {
-    Daisy.prototype[func.name] = function() {
+    Daisy.prototype[functionName(func)] = function() {
       return func.apply(toArray(this), arguments);
     };
   }
