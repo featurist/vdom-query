@@ -15,7 +15,8 @@ function render() {
   return h('.top', h('.banana'));
 }
 
-$(render).find('.banana').first().attr('class') //-> banana
+var vdom = render();
+$(vdom).find('.banana').first().attr('class') //-> banana
 
 ```
 
