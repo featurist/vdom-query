@@ -1,5 +1,5 @@
 var daisyChain = require('./daisyChain');
-var select = require("./vtree-select");
+var select = require("vtree-select");
 var VText = require('virtual-dom').VText;
 var h = require('virtual-dom/h')
 var parser = require('2vdom');

@@ -1,7 +1,7 @@
 "use strict";
 
 var h = require("virtual-hyperscript");
-var select = require("../vtree-select");
+var select = require("vtree-select");
 
 var span1 = h("span.span1", "hello world");
 var span2 = h("span.span2", "hello world2");

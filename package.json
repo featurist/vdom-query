@@ -1,6 +1,6 @@
 {
   "name": "vdom-query",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "2vdom": "^0.1.2",
-    "cssauron": "git://github.com/featurist/cssauron.git#case-insensitive-tags"
+    "vtree-select": "^2.1.0"
   }
 }
