@@ -144,7 +144,9 @@ function noop(){}
 
 function nodeToTarget(node){
   return {
-    id: node.properties.id
+    id: node.properties.id,
+    selectedIndex: node.selectedIndex,
+    value: node.value,
   }
 }
 
@@ -162,30 +164,32 @@ function trigger(eventName, data) {
   data = data || {};
 
   this.forEach(function(node){
+    var nodeType = (node.properties.type || '').toLowerCase();
+    var tagName = node.tagName.toUpperCase();
+
     data = shallowClone(data);
     data.preventDefault = noop; // there is nothing to prevent anyway, it is all virtual!
 
     data.currentTarget = data.currentTarget || nodeToTarget(node);
     data.target = data.target || nodeToTarget(node);
     data.eventPhase = data.eventPhase || 2;
-    var nodeType = (node.properties.type || '').toLowerCase();
 
     if (data.eventPhase === 2 && eventName === 'click') {
-      if (node.tagName === 'INPUT' && (nodeType === 'checkbox' || nodeType === 'radio')) {
+      if (tagName === 'INPUT' && (nodeType === 'checkbox' || nodeType === 'radio')) {
         var $node = v$(node);
         $node.prop('checked', !$node.prop('checked'));
       }
 
-      if (node.tagName === 'LABEL') {
+      if (tagName === 'LABEL') {
         v$(node).find('input[type=checkbox],input[type=radio]').trigger('click', data);
       }
 
-      if (node.tagName === 'BUTTON' && nodeType === 'submit') {
+      if (tagName === 'BUTTON' && nodeType === 'submit') {
         submitForm(node);
       }
     }
 
-    if (node.tagName === 'INPUT' && nodeType === 'text' && eventName === 'submit') {
+    if (tagName === 'INPUT' && nodeType === 'text' && eventName === 'submit') {
       submitForm(node);
     }
 
@@ -215,7 +219,7 @@ function prop(name, value){
   } else {
     var node = this[0];
     if (name === 'tagName') {
-      return node.tagName;
+      return node.tagName.toUpperCase();
     }
     return node.properties && (node.properties[name] === name || node.properties[name] === '');
   }
@@ -226,11 +230,17 @@ function val(setValue) {
   if (el.prop('tagName') === 'SELECT') {
     if (setValue !== undefined) {
       this[0].value = setValue;
+      this[0].children.forEach(function(node){
+        if (node.properties.value === setValue) {
+          node.properties.selected = 'selected';
+        }
+      });
     }
     var selected = this[0].children.filter(function(node){
       return node.properties.selected === 'selected';
     })[0];
 
+    this[0].selectedIndex = this[0].children.indexOf(selected);
     if (selected) {
       return v$(selected).val();
     }

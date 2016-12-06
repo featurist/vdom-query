@@ -92,6 +92,7 @@ describe('val()', function(){
       $(vdom).val('2');
 
       expect(vdom.value).to.equal('2');
+      expect(vdom.selectedIndex).to.equal(1);
     });
   });
 
