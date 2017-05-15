@@ -131,10 +131,10 @@ function remove() {
   });
 }
 
-function on(eventName, handler) {
+function on(eventType, handler) {
   this.forEach(function(node) {
     node.properties = node.properties || {};
-    var handlers = node.properties['on'+eventName] = node.properties['on'+eventName] || [];
+    var handlers = node.properties['on'+eventType] = node.properties['on'+eventType] || [];
     handlers.push(handler);
   });
   return this;
@@ -160,7 +160,7 @@ function submitForm(node) {
   }
 }
 
-function trigger(eventName, data) {
+function trigger(eventType, data) {
   data = data || {};
 
   this.forEach(function(node){
@@ -173,8 +173,9 @@ function trigger(eventName, data) {
     data.currentTarget = data.currentTarget || nodeToTarget(node);
     data.target = data.target || nodeToTarget(node);
     data.eventPhase = data.eventPhase || 2;
+    data.type = eventType
 
-    if (data.eventPhase === 2 && eventName === 'click') {
+    if (data.eventPhase === 2 && eventType === 'click') {
       if (tagName === 'INPUT' && (nodeType === 'checkbox' || nodeType === 'radio')) {
         var $node = v$(node);
         $node.prop('checked', !$node.prop('checked'));
@@ -189,12 +190,12 @@ function trigger(eventName, data) {
       }
     }
 
-    if (tagName === 'INPUT' && nodeType === 'text' && eventName === 'submit') {
+    if (tagName === 'INPUT' && nodeType === 'text' && eventType === 'submit') {
       submitForm(node);
     }
 
     node.properties = node.properties || {};
-    var events = (node.properties['on'+eventName] || []);
+    var events = (node.properties['on'+eventType] || []);
     if (!(events instanceof Array)) {
       events = [events];
     }
