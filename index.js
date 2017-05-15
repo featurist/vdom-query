@@ -8,6 +8,12 @@ var attributeMap = {
   'class' : 'className',
   'for' : 'htmlFor'
 };
+var VNode = require('virtual-dom').VNode;
+
+VNode.prototype.__defineGetter__('id', function () {
+  console.log('get id')
+  return this.properties.id
+})
 
 function shallowClone(obj){
   var cloned = {};
@@ -142,14 +148,6 @@ function on(eventType, handler) {
 
 function noop(){}
 
-function nodeToTarget(node){
-  return {
-    id: node.properties.id,
-    selectedIndex: node.selectedIndex,
-    value: node.value,
-  }
-}
-
 function submitForm(node) {
   var potentialForm = node.parent;
   while(potentialForm && potentialForm.tagName !== 'FORM') {
@@ -170,8 +168,8 @@ function trigger(eventType, data) {
     data = shallowClone(data);
     data.preventDefault = noop; // there is nothing to prevent anyway, it is all virtual!
 
-    data.currentTarget = data.currentTarget || nodeToTarget(node);
-    data.target = data.target || nodeToTarget(node);
+    data.currentTarget = data.currentTarget || node 
+    data.target = data.target || node 
     data.eventPhase = data.eventPhase || 2;
     data.type = eventType
 
