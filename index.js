@@ -11,7 +11,6 @@ var attributeMap = {
 var VNode = require('virtual-dom').VNode;
 
 VNode.prototype.__defineGetter__('id', function () {
-  console.log('get id')
   return this.properties.id
 })
 
@@ -294,3 +293,5 @@ function v$(vtree) {
 }
 
 module.exports = v$;
+
+v$.fn = vDaisy.fn

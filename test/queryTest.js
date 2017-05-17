@@ -25,6 +25,20 @@ describe('find()', function(){
   });
 });
 
+describe('.fn.extend()', () => {
+  it('can extend vdom-query', () => {
+    $.fn.extend({
+      magic: function () {
+        return this.text() + ' magic!'
+      }
+    })
+
+    var f = $(h('h1', 'black'));
+    expect(f.text()).to.equal('black')
+    expect(f.magic()).to.equal('black magic!')
+  })
+})
+
 describe('text()', function(){
   it('can get the text of an element', function(){
     var vdom = h('.x', 'hello');
