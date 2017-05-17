@@ -18,23 +18,23 @@ function daisyChain(chainables, chainBreakers) {
   Daisy.prototype = [];
 
   Daisy.prototype.toArray = Daisy.prototype.toJSON = function() {
-    return toArray(this);
+    return [].slice.apply(this);
   }
 
   function addChainableToPrototype(func) {
     Daisy.prototype[functionName(func)] = function() {
-      return applyTransform.call(this, func, toArray(arguments));
+      return applyTransform.call(this, func, arguments);
     };
   }
 
   function addChainBreakerToPrototype(func) {
     Daisy.prototype[functionName(func)] = function() {
-      return func.apply(toArray(this), arguments);
+      return func.apply(this, arguments);
     };
   }
 
   function applyTransform(func, args) {
-    var transformed = func.apply(toArray(this), args);
+    var transformed = func.apply(this, args);
     return new Daisy(transformed, this);
   }
 
@@ -46,13 +46,23 @@ function daisyChain(chainables, chainBreakers) {
     addChainBreakerToPrototype(chainBreakers[i]);
   }
 
-  return function() {
-    return new Daisy(arguments[0] || []);
+  var fn = function() {
+    var d = new Daisy(arguments[0] || []);
+    return d
   };
-}
 
-function toArray(a) {
-  return [].slice.apply(a);
+  fn.fn = {
+    extend: function (object) {
+      Object.keys(object).forEach(function (name) {
+        var func = object[name]
+        Daisy.prototype[name] = function() {
+          return func.apply(this, arguments);
+        };
+      })
+    }
+  }
+
+  return fn
 }
 
 module.exports = daisyChain;
